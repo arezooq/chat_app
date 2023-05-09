@@ -1,0 +1,90 @@
+<%- include('layouts/header.ejs') %>
+
+<% 
+if(typeof message !== 'undefined'){
+    %>
+    <p style="color: green;"><%= message %></p>
+    <%
+}
+%>
+
+<h1 class="d-grid gap-2 col-6 mx-auto align-items-center mt-5">Sign Up</h1>
+
+<form action="" method="post" enctype="multipart/form-data" class="d-grid gap-2 col-6 mx-auto align-items-center mt-5">
+  <div class="mb-3 mt-3">
+    <input type="text" name="phone" class="form-control" id="phone" placeholder="Enter Phone Number" aria-labelledby="phoneHelpBlock" required>
+    <div id="phoneHelpBlock" class="form-text">
+      
+    </div>
+  </div>
+    <div class="mb-3 mt-3">
+        <input type="text" name="name" class="form-control" id="name" placeholder="Enter Name" required>
+      </div>
+    <div class="mb-3 mt-3">
+      <input type="password" name="password" class="form-control" id="password" placeholder="Enter Password" aria-labelledby="passwordHelpBlock" required>
+      <div id="passwordHelpBlock" class="form-text">
+        
+      </div>
+    </div>
+    <div class="mb-3 mt-3">
+        <input type="password" name="confirmPassword" class="form-control" id="confirmPassword" placeholder="Enter Confirm Password" required>
+      </div>
+      <div class="mb-3 mt-3">
+        <input type="file" name="image" class="form-control" id="image" required>
+      </div>
+    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3 mx-auto">
+      <button type="submit" class="btn btn-primary" id="register">Signup</button>
+    </div>
+   
+  </form>
+
+<script>
+
+
+  const phone = document.getElementById('phone')
+  const phoneHelpBlock = document.getElementById('phoneHelpBlock')
+  const password = document.getElementById('password')
+  const passwordHelpBlock = document.getElementById('passwordHelpBlock')
+
+  phone.addEventListener('blur', (e) => {
+    const value = e.currentTarget.value
+
+    const regex = /^[0-9]{11}$/;
+
+  if(value === ""){
+    phoneHelpBlock.innerText = "Please Enter Your Phone Number";
+    phoneHelpBlock.style.color = "red";
+  }
+  else if(value.length = 11 && value.match(regex) ){
+    phoneHelpBlock.innerText = "Great!, You Enter A Valid Phone Number";
+    phoneHelpBlock.style.color = "green";
+  }
+  else {
+    phoneHelpBlock.innerText = "Your Phone Number is_invalid";
+    phoneHelpBlock.style.color = "red";
+  }
+  }) 
+
+  password.addEventListener("blur", (e) => {
+    const value = e.currentTarget.value
+
+    if(value === ""){
+      passwordHelpBlock.innerText = "Please Enter Your Password";
+      passwordHelpBlock.style.color = "red";    
+    }
+    if(value.length < 8){
+      passwordHelpBlock.innerText = "Your Password must be 8 character longs";
+      passwordHelpBlock.style.color = "red";   
+    }
+    if(value.length >= 8){
+      passwordHelpBlock.innerText = "Great!, You Enter A Valid Password";
+      passwordHelpBlock.style.color = "green";   
+    }
+})
+
+
+</script>
+
+
+
+<%- include('layouts/footer.ejs') %>
