@@ -249,9 +249,9 @@ const updateInformationUser = async (req, res) => {
         const userInfo = await User.findOne({ where: { phone: req.body.id } })
         userInfo.update({ name: req.body.name });
         userInfo.save();
-        res.status(200).send({ success: true })
+        res.status(200).send({ success: true }) 
     } catch (error){
-        res.status(400).send({ success: false, msg: error.message })
+        res.status(400).send({ success: false, msg: error.message }) 
     }
 
 }
