@@ -36,7 +36,8 @@ To clone the repository using an SSH key, including a certificate issued by your
 
 * Install Xampp & Run command to start services:
  
-sudo /opt/lampp/lampp start
+   sudo /opt/lampp/lampp start
+
 
 *  Run npm install to install all dependencies
 
