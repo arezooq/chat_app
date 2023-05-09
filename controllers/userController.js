@@ -98,7 +98,7 @@ const login = async (req, res) =>{
                 })
 
                 var users = []  
-                var lastChat = []                          
+                var lastChat = []
 
                 for(let i =0; i < contacts.count; i++){
                     users.push(await User.findOne({
@@ -106,22 +106,28 @@ const login = async (req, res) =>{
                         phone: contacts.rows[i].phone
                     }
                    }))
-                //    lastChat.push(await Chat.findAll({
-                //     where: {
-                //         [Op.or]: [{
-                //             sender_id: userData.phone, receiver_id: contacts.rows[i].phone
-                //             },
-                //             {
-                //             sender_id: contacts.rows[i].phone, receiver_id: userData.phone
-                //             }
-                //         ], 
-                //         id: { 
-                //             [Op.in]: [await Chat.max('id')]
-                //           }
-                //     }
-                // }))
+                   lastChat.push(
+                    await Chat.findOne({
+                        where: {
+                            [Op.or]: [{
+                                sender_id: userData.phone, receiver_id: contacts.rows[i].phone
+                                },
+                                {
+                                    sender_id: contacts.rows[i].phone, receiver_id: userData.phone
+                                }
+                            ]
+                        },
+                        order: [['createdAt', 'DESC']]
+                    })
+                    
+                   )
                 }
-                console.log(lastChat)
+                for(let x=0; x<lastChat.length; x++){
+                    if( lastChat[x] === null ){
+                        lastChat[x] = 'NO'
+                    }
+                console.log(lastChat[x])
+                }
 
                 res.render('dashboard', { user: userData, users: users, contacts: contactsAll, lastChat: lastChat })
 

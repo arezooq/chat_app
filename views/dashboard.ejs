@@ -1,11 +1,4 @@
 <%- include('layouts/header.ejs') %>
-
-<div class="container">
-    <div class="row clearfix">
-        <div class="col-lg-12">
-            <div class="card chat-app">
-  
-                <div id="plist" class="people-list">
                   <ul class="menu">
                     <li>   
                       <div class="input-group" style="border-bottom: 2px solid #f0f7f5">
@@ -21,91 +14,105 @@
                       </div>
                     </div>
                     </li>
-                    <div class="header">
-      
+      <div class="header">
       <div class="dropdown hidden-sm text-right">
-          <ul class="dropbtn icons btn-right showLeft" onclick="showDropdown()">
+      <ul class="dropbtn icons btn-right showLeft" onclick="showDropdown()">
               <li></li>
               <li></li>
               <li></li>
               <div id="myDropdown" class="dropdown-content">
                   <a href="" id="editUser" class="btn btn-outline-secondary" data-id="<%= user.phone %>" data-name="<%= user.name %>" data-toggle="modal" data-target="#editUserModal">Edit Name</a>                      
                   <a href="/logout" class="btn btn-outline-secondary">Log Out</a>
-              </div>
-          </ul>
+      </div>
+    </ul>
       
       </div>
-      
       </div>
      </ul>
          <button class="hamburger">
             <i class="menuIcon material-icons">menu</i>
             <i class="closeIcon material-icons">close</i>
          </button>
-                    <ul class="list-unstyled contact-list mt-2 mb-0">
-                      <% if ( users !== '' && contacts !== ''){
-                        for(let x=0; x < users.length; x++){
-                      %>
-                      <li class="clearfix user-list" data-name="<%= contacts[x].name %>" data-phone="<%= users[x].phone %>" data-is_online="<%= users[x].is_online %>" data-img="<%= users[x].image %>" id="userList">
-                        <img src="<%= users[x].image %>" alt="avatar">
-                        <div class="about">
-                            <div class="nameContact" data-id="<%= contacts[x].name %>"><%= contacts[x].name %></div>
-                            <%
-                          if( users[x].is_online == 1 ){ %>
-                          <div class="status" id="<%= users[x].phone %>-status" data-id="<%= users[x].is_online %>"> <i class="fa fa-circle online"></i> online </div>
-                          <% } else { %>
-                          <div class="status" id="<%= users[x].phone%>-status"  data-id="<%= users[x].is_online %>"> <i class="fa fa-circle offline"></i> offline </div>  
-                          <% } %>
-                        </div>
-                        <div class="message lastChat">
-                          <%= lastChat %>
-                        </div>
-                       
-                    </li>
-                    <%
-                    }
-                  }
-                    if(users == ''){
-                      %>
-                    <h5 class="noMessage">You Have No Contacts yet...!</h5>
-                      <% } %>
 
-                  </ul>
-                  
-                  <div><i class="fa fa-user-plus" id="createContact" style="font-size: 48px;" data-id="<%= user.phone %>" data-toggle="modal" data-target="#createContactModal"></i></div>
 
-                </div>
-                <div class="chat">
-                    <div class="chat-header clearfix">
-                        <div class="row">
-                            <div class="contact-about col-lg-6">
-
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chat-history">
-                        <ul class="m-b-0">
-                  
-                          
-
-                        </ul>
-                    </div>
-                    <div class="chat-message clearfix">
-                      <form action="" id="chat-form">
-                        <div class="input-group mb-0">
-                          <input type="text" name="message" id="message" class="form-control" placeholder="Enter text here...">                                    
-                            <div class="input-group-prepend">
-                              <button type="submit" class="input-group-text">
-                               <i class="fa fa-send"></i>
-                              </button>
-                            </div>
-                        </div>
-                      </form>
-                    </div>
-                </div>
-            </div>
+<div class="container-fluid h-100">
+  <div class="row justify-content-center h-100">
+    <div class="col-md-4 col-xl-3 chat"><div class="card mb-sm-3 mb-md-0 contacts_card">
+      <div class="card-header">
+        <div class="input-group">
+          <input type="text" placeholder="Search..." name="" class="form-control search">
+          <div class="input-group-prepend">
+            <span class="input-group-text search_btn"><i class="fas fa-search"></i></span>
+          </div>
         </div>
+      </div>
+      <div class="card-body contacts_body">
+        <ui class="contacts">
+          <% if (users !== '') {
+            for (let i = 0; i < users.length; i++) {
+            %>
+        <li class="active user-list" data-name="<%= contacts[i].name %>" data-phone="<%= users[i].phone %>" data-is_online="<%= users[i].is_online %>" data-img="<%= users[i].image %>">
+          <div class="d-flex bd-highlight">
+            <div class="img_cont">
+              <img src="<%= users[i].image %>" class="rounded-circle user_img">
+              <%
+                if( users[i].is_online == 1 ){ %>
+                  <span class="status online_icon" id="<%= users[i].phone %>-status" data-id="<%= users[i].is_online %>"></span>
+              <% } else { %>
+                <span class="status online_icon offline" id="<%= users[i].phone %>-status" data-id="<%= users[i].is_online %>"></span>
+              <% } %>
+            </div>
+            <div class="user_info">
+              <span class="nameContact" data-id="<%= contacts[i].name %>"><%= contacts[i].name %></span>
+              <% if( lastChat !== 'NO' ) { %>   
+                 <p><%= lastChat[i].message %></p>
+              <% } %>
+            </div>
+          </div>
+        </li>
+        <%
+          }
+        }
+        if(users == ''){
+        %>
+        <h5 class="">You Have No Contacts yet...!</h5>
+        <% } %>
+        </ui>
+      </div>
+      <div class="card-footer"></div>
+    </div></div>
+    <div class="col-md-8 col-xl-6 chat">
+      <div class="card">
+        <div class="card-header msg_head contact-about">
 
+        </div>
+        <div class="card-body msg_card_body">
+          <div class="chat-history d-flex justify-content-end mb-4">
+       
+          </div>
+        </div>
+        <div class="card-footer">
+          <div class="input-group chat-message">
+            <form action="" id="chat-form">
+              <div class="input-group mb-0">
+                <div class="input-group-append">
+                  <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
+                </div>
+                <input type="text" name="message" id="message" class="form-control type_msg" placeholder="Enter text here...">                                    
+                <div class="input-group-append">
+                  <button type="submit" class="input-group-text send_btn">
+                    <i class="fas fa-location-arrow"></i>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  
  <!-- Delete Chat -->
     
 
@@ -295,30 +302,31 @@ $(document).ready(function() {
     var isOnlineContact = $(this).attr('data-is_online')
 
 let html =  `
-<a href="javascript:void(0);" data-toggle="modal" data-target="#view_info">
- <img src="${imgContact}" alt="avatar">
-</a>
-<div class="chat-about">
-  <h6 class="m-b-0">${nameContact}</h6>
-  `
+<div class="d-flex bd-highlight">
+    <div class="img_cont">
+      <img src="${imgContact}" class="rounded-circle user_img">`
+      if(isOnlineContact == 1){
+        html+= `<span class="online_icon"></span>`
+      } else {
+        html+= `<span class="online_icon offline"></span>`
+      }
+      html+= ` </div>
+    <div class="user_info">
+      <span>${nameContact}</span>`
   if(isOnlineContact == 1){
- html+= `<small><div class="status" id="${receiver_id}-status" data-id="${isOnlineContact}"> <i class="fa fa-circle online"></i> online </div></small>`
+    html+= `<small><p id="${receiver_id}-status" data-id="${isOnlineContact}"> online </p></small>`
   } else {
-    html+= `<small><div class="status" id="${receiver_id}-status"  data-id="${isOnlineContact}"> <i class="fa fa-circle offline"></i> offline </div></small>`
+    html+= `<small><p id="${receiver_id}-status"  data-id="${isOnlineContact}"> offline </p></small>`
   }
-  html+= `
-  <div class="dropdown hidden-sm text-right">
-<ul class="dropbtn icons btn-left" onclick="showRightMenu()">
-<li></li>
-<li></li>
-<li></li>
-    <div id="myRightMenu" class="dropdown-content">
-      <a href="" id="editContact" class="btn btn-outline-secondary" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#editContactModal">Edit Contact</a>                      
-      <a href="" id="deleteContact" class="btn btn-outline-secondary" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#deleteContactModal">Delete Contact</a>                      
-    </div>
-  </ul>
- </div>
- </div>
+  html+= ` </div>
+  </div>
+  <span id="action_menu_btn" onClick="actionMenu()"><i class="fas fa-ellipsis-v"></i></span>
+  <div class="action_menu" id="actionMenu">
+    <ul>
+      <li><i class="fas fa-user-circle"></i><a href="" id="editContact" class="btn btn-outline-secondary" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#editContactModal">Edit Contact</a></li>
+      <li><i class="fas fa-trash"></i><a href="" id="deleteContact" class="btn btn-outline-secondary" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#deleteContactModal">Delete Contact</a></li>
+    </ul>
+  </div>
   `
 
 $('.contact-about').append(html)
@@ -346,15 +354,12 @@ $('.chat-message').submit(function(event){
         $('#message').val('')
         let chat = response.data.message
         let html = `
-        <li class="clearfix" id="${response.data.phone}">
-         <div class="message-data">
-          <span class="message-data-time">${response.data.createdAt}</span>
-         </div>
-         <div class="message my-message">${chat}
+        <div class="msg_cotainer" id="${response.data.phone}">
+          ${chat}
           <i class="fa fa-trash" aria-hidden="true" data-id="${response.data.id}" data-toggle="modal" data-target="#deleteChatModal"></i>
           <i class="fa fa-edit" aria-hidden="true" data-id="${response.data.id}" data-msg="${chat}" data-toggle="modal" data-target="#editChatModal"></i>
-          </div>                                    
-        </li> 
+          <span class="msg_time">${response.data.createdAt}</span>
+        </div>                           
         `;
         $('.chat-history').append(html)
         socket.emit('newChat', response.data)
@@ -373,12 +378,10 @@ socket.on('loadNewChat', function(data) {
   if(sender_id === data.sender_id && receiver_id === data.receiver_id){
 
     let html = `
-    <li class="clearfix" id="${data.phone}">
-    <div class="message-data text-right">
-        <span class="message-data-time">${data.createdAt}</span>
-    </div>
-     <div class="message other-message float-right"> ${data.message} </div>
-    </li>  
+    <div class="msg_cotainer_send" id="${data.phone}">
+    ${data.message}
+    <span class="msg_time_send>${data.createdAt}</span>
+    </div> 
     `;
     $('.chat-history').append(html)
   }
@@ -390,37 +393,30 @@ socket.on('loadNewChat', function(data) {
 
 socket.on('loadChats', function(data) {
   $('.chat-history').html('')
-  var chats = data.chats
-  
+  var chats = data.chats  
   let html = ''
   
   for(let x=0; x < chats.length; x++){
     let addClass = ''
     let date = ''
     if(chats[x].sender_id === sender_id){
-      addClass = "my-message"
-      date = "message-data"
+      addClass = "msg_cotainer"
+      date = "msg_time"
     }
     else{
-      addClass = "other-message float-right"
-      date = "message-data text-right"
+      addClass = "msg_cotainer_send"
+      date = "msg_time_send"
     }
 
     html+= `
-    <li class="clearfix" id="${chats[x].phone}">
-    <div class="${date}">
-        <span class="message-data-time">${chats[x].createdAt}</span>
-    </div>
-     <div class="message ${addClass}"> ${chats[x].message}`;
-    
-    if(chats[x].sender_id == sender_id){
-    html+= `  <i class="fa fa-trash" aria-hidden="true" data-id="${chats[x].id}" data-toggle="modal" data-target="#deleteChatModal"></i>
-    <i class="fa fa-edit" aria-hidden="true" data-id="${chats[x].id}" data-msg="${chats[x].message}" data-toggle="modal" data-target="#editChatModal"></i>
-    `;
-    }
-
-    html+= ` </div>
-    </li> 
+  <div class="${addClass}" id="${chats[x].id}">
+    ${chats[x].message}`
+  if(chats[x].sender_id == sender_id){
+  html+=`<i class="fa fa-trash" aria-hidden="true" data-id="${chats[x].id}" data-toggle="modal" data-target="#deleteChatModal"></i>
+    <i class="fa fa-edit" aria-hidden="true" data-id="${chats[x].id}" data-msg="${chats[x].message}" data-toggle="modal" data-target="#editChatModal"></i>`
+  }
+  html+=` <span class="${date}">${chats[x].createdAt}</span>
+  </div>
     `
   }
 
@@ -428,7 +424,6 @@ socket.on('loadChats', function(data) {
     html+= `
     <h5 class="noMessage">No Messages Here yet...!</h5>`
   }
-  
 
   $('.chat-history').append(html)
 
@@ -755,6 +750,9 @@ function showRightMenu() {
 document.getElementById("myRightMenu").classList.toggle("show");
 }
 
+function actionMenu() {
+document.getElementById("actionMenu").classList.toggle("show");
+}
 
 </script>
 

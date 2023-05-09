@@ -75,24 +75,6 @@ usp.on('connection', async (socket) => {
         socket.emit('loadChats', { chats: chats })
     })
 
-    // load old chats
-    socket.on('existsChat', async function(data) {
-
-        var chats = await Chat.findAll({
-            where: {
-                [Op.or]: [{
-                    sender_id: data.sender_id, receiver_id: data.receiver_id
-                    },
-                    {
-                        sender_id: data.receiver_id, receiver_id: data.sender_id
-                    }
-                ]
-            }
-        })
-            socket.emit('loadChats', { chats: chats })
-        })  
-        
-
     // delete chat
     socket.on('chatDeleted', function(id){
         socket.broadcast.emit('chatMessageDeleted', id)
