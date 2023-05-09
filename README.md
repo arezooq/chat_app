@@ -20,7 +20,8 @@ To clone the repository using an SSH key, including a certificate issued by your
 
   4. Press Enter to create your local clone.
 
-      git clone git@github.com:arezooq/chat_app.git
+    git clone git@github.com:arezooq/chat_app.git
+
      Cloning into 'chat_app'...
      remote: Enumerating objects: 4522, done.
      remote: Counting objects: 100% (4522/4522), done.
