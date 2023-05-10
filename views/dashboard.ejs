@@ -1,116 +1,80 @@
 <%- include('layouts/header.ejs') %>
-                  <ul class="menu">
-                    <li>   
-                      <div class="input-group" style="border-bottom: 2px solid #f0f7f5">
-                      <img src="<%= user.image %>" style="width: 50px;height: 50px;border-radius: 50%;margin-bottom: 2px;" data-id="<%= user.image %>" alt="avatar" class="img-user">
-                      <div class="about" style="margin-bottom: 2px;">
-                          <div class="nameUser" data-id="<%= user.name %>"><%= user.name %></div>
-                          <%
-                          if( user.is_online !== 0 ){ %>
-                          <div class="status" id="<%= user.phone %>-status" data-id="<%= user.is_online %>"> <i class="fa fa-circle online"></i> online </div>
-                          <% } else { %>
-                          <div class="status" id="<%= user.phone%>-status"  data-id="<%= user.is_online %>"> <i class="fa fa-circle offline"></i> offline </div>  
-                          <% } %>
-                      </div>
-                    </div>
-                    </li>
-      <div class="header">
-      <div class="dropdown hidden-sm text-right">
-      <ul class="dropbtn icons btn-right showLeft" onclick="showDropdown()">
-              <li></li>
-              <li></li>
-              <li></li>
-              <div id="myDropdown" class="dropdown-content">
-                  <a href="" id="editUser" class="btn btn-outline-secondary" data-id="<%= user.phone %>" data-name="<%= user.name %>" data-toggle="modal" data-target="#editUserModal">Edit Name</a>                      
-                  <a href="/logout" class="btn btn-outline-secondary">Log Out</a>
-      </div>
-    </ul>
-      
-      </div>
-      </div>
-     </ul>
-         <button class="hamburger">
-            <i class="menuIcon material-icons">menu</i>
-            <i class="closeIcon material-icons">close</i>
-         </button>
 
 
-<div class="container-fluid h-100">
-  <div class="row justify-content-center h-100">
-    <div class="col-md-4 col-xl-3 chat"><div class="card mb-sm-3 mb-md-0 contacts_card">
-      <div class="card-header">
-        <div class="input-group">
-          <input type="text" placeholder="Search..." name="" class="form-control search">
-          <div class="input-group-prepend">
-            <span class="input-group-text search_btn"><i class="fas fa-search"></i></span>
+<div class="container bootstrap snippets bootdey">
+  <div class="tile tile-alt" id="messages-main">
+      <div class="ms-menu">
+          <div class="ms-user clearfix">
+              <img src="<%= user.image %>" alt="" class="img-avatar pull-left">
+              <div class="nameUser" data-id="<%= user.name %>">Signed in as <br> <%= user.name %></div>
           </div>
-        </div>
-      </div>
-      <div class="card-body contacts_body">
-        <ui class="contacts">
-          <% if (users !== '') {
-            for (let i = 0; i < users.length; i++) {
-            %>
-        <li class="active user-list" data-name="<%= contacts[i].name %>" data-phone="<%= users[i].phone %>" data-is_online="<%= users[i].is_online %>" data-img="<%= users[i].image %>">
-          <div class="d-flex bd-highlight">
-            <div class="img_cont">
-              <img src="<%= users[i].image %>" class="rounded-circle user_img">
-              <%
-                if( users[i].is_online == 1 ){ %>
-                  <span class="status online_icon" id="<%= users[i].phone %>-status" data-id="<%= users[i].is_online %>"></span>
-              <% } else { %>
-                <span class="status online_icon offline" id="<%= users[i].phone %>-status" data-id="<%= users[i].is_online %>"></span>
-              <% } %>
-            </div>
-            <div class="user_info">
-              <span class="nameContact" data-id="<%= contacts[i].name %>"><%= contacts[i].name %></span>
-              <% if( lastChat !== 'NO' ) { %>   
-                 <p><%= lastChat[i].message %></p>
-              <% } %>
-            </div>
-          </div>
-        </li>
-        <%
-          }
-        }
-        if(users == ''){
-        %>
-        <h5 class="">You Have No Contacts yet...!</h5>
-        <% } %>
-        </ui>
-      </div>
-      <div class="card-footer"></div>
-    </div></div>
-    <div class="col-md-8 col-xl-6 chat">
-      <div class="card">
-        <div class="card-header msg_head contact-about">
-
-        </div>
-        <div class="card-body msg_card_body">
-          <div class="chat-history d-flex justify-content-end mb-4">
-       
-          </div>
-        </div>
-        <div class="card-footer">
-          <div class="input-group chat-message">
-            <form action="" id="chat-form">
-              <div class="input-group mb-0">
-                <div class="input-group-append">
-                  <span class="input-group-text attach_btn"><i class="fas fa-paperclip"></i></span>
-                </div>
-                <input type="text" name="message" id="message" class="form-control type_msg" placeholder="Enter text here...">                                    
-                <div class="input-group-append">
-                  <button type="submit" class="input-group-text send_btn">
-                    <i class="fas fa-location-arrow"></i>
-                  </button>
-                </div>
+          
+          <div class="p-15">
+              <div class="dropdown">
+                  <a class="btn btn-primary btn-block" href="" data-toggle="dropdown">Messages <i class="caret m-l-5"></i></a>
+  
+                  <ul class="dropdown-menu dm-icon w-100">
+                      <li><a href=""><i class="fa fa-envelope"></i> Messages</a></li>
+                      <li><a href=""><i class="fa fa-users"></i> Contacts</a></li>
+                  </ul>
               </div>
-            </form>
           </div>
-        </div>
+          
+          <ul class="list-group lg-alt">
+              <% if (users !== '') {
+                  for (let i = 0; i < users.length; i++) {
+                  %>
+              <li class="list-group-item media user-list" data-name="<%= contacts[i].name %>" data-phone="<%= users[i].phone %>" data-is_online="<%= users[i].is_online %>" data-img="<%= users[i].image %>" href="">
+                  <div class="pull-left">
+                      <img src="<%= users[i].image %>" alt="contact" class="img-avatar">
+                  </div>
+                  <div class="media-body">
+                      <small class="list-group-item-heading"><%= contacts[i].name %></small>
+                      <br>
+                      <% if( lastChat !== 'NO' ) { %>   
+                          <small class="list-group-item-text c-gray"><%= lastChat[i].message %></small>
+                       <% } %>
+                  </div>
+              </li>
+              <%
+          }
+      }
+      if(users == ''){
+      %>
+      <h5 class="">You Have No Contacts yet...!</h5>
+      <% } %>
+          </ul>         
       </div>
-    </div>
-
+      
+      <div class="ms-body">
+          <div class="action-header clearfix">
+              
+              <div class="pull-left hidden-xs contact-about">
+              
+              </div>
+               
+              <ul class="ah-actions actions">
+          
+              </ul>
+          </div>
+          <div class="chat-history">
+            
+            </div>
+  
+          
+          <div class="msb-reply chat-message">
+            <form action="" id="chat-form">
+            <div class="input-group mb-0">
+              <input type="text" name="message" id="message" class="form-control" placeholder="Enter text here...">                                    
+              <div class="input-group-append">
+                  <button type="submit">
+                  <i class="fas fa-location-arrow"></i>
+                  </button>
+              </div>
+            </div>
+          </form>
+          </div>
+      </div>
 
   
  <!-- Delete Chat -->
@@ -302,35 +266,33 @@ $(document).ready(function() {
     var isOnlineContact = $(this).attr('data-is_online')
 
 let html =  `
-<div class="d-flex bd-highlight">
-    <div class="img_cont">
-      <img src="${imgContact}" class="rounded-circle user_img">`
-      if(isOnlineContact == 1){
-        html+= `<span class="online_icon"></span>`
-      } else {
-        html+= `<span class="online_icon offline"></span>`
-      }
-      html+= ` </div>
-    <div class="user_info">
-      <span>${nameContact}</span>`
+<img src="${imgContact}" alt="contactAbout" class="img-avatar m-r-10">
+<div class="lv-avatar pull-left">         
+</div>
+  <span>${nameContact}</span>`
   if(isOnlineContact == 1){
-    html+= `<small><p id="${receiver_id}-status" data-id="${isOnlineContact}"> online </p></small>`
+    html+= `<small><p style="color:green" id="${receiver_id}-status" data-id="${isOnlineContact}"> online </p></small>`
   } else {
-    html+= `<small><p id="${receiver_id}-status"  data-id="${isOnlineContact}"> offline </p></small>`
-  }
-  html+= ` </div>
-  </div>
-  <span id="action_menu_btn" onClick="actionMenu()"><i class="fas fa-ellipsis-v"></i></span>
-  <div class="action_menu" id="actionMenu">
-    <ul>
-      <li><i class="fas fa-user-circle"></i><a href="" id="editContact" class="btn btn-outline-secondary" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#editContactModal">Edit Contact</a></li>
-      <li><i class="fas fa-trash"></i><a href="" id="deleteContact" class="btn btn-outline-secondary" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#deleteContactModal">Delete Contact</a></li>
-    </ul>
-  </div>
-  `
+    html+= `<small><p style="color:red" id="${receiver_id}-status"  data-id="${isOnlineContact}"> offline </p></small>`
+  }  
 
 $('.contact-about').append(html)
 
+let actionBar =  `
+<li><a><i class="fa fa-trash" aria-hidden="true" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#deleteContactModal"></i></a></li>
+<li><a><i class="fa fa-edit" aria-hidden="true" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#editContactModal"></i></a></li>                          
+<li class="dropdown">
+  <a data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bars"></i></a>
+          
+  <ul class="dropdown-menu dropdown-menu-right">
+    <li><a>Refresh</a></li>
+    <li><a>Message Settings</a></li>
+  </ul>
+</li>
+<li><i class="fa fa-close" onclick="closeChat()" style="font-size:24px"></i></li>
+`
+
+$('.actions').append(actionBar)
     socket.emit('existsChat', { sender_id: sender_id, receiver_id: receiver_id })
   })
   
@@ -342,29 +304,33 @@ $('.contact-about').append(html)
 
 $('.chat-message').submit(function(event){
   event.preventDefault()
-
-  var message = $('#message').val()
+  let date = new Date()
+  let hoursAndMinutes = date.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric", hour: '2-digit', minute: '2-digit',}) 
+var message = $('#message').val()
 
   $.ajax({
     url:'/save-chat',
     type: 'POST',
-    data: { sender_id: sender_id, receiver_id: receiver_id, message: message },
+    data: { sender_id: sender_id, receiver_id: receiver_id, message: message, date: hoursAndMinutes },
     success: function(response){
       if(response.success){
         $('#message').val('')
         let chat = response.data.message
         let html = `
-        <div class="msg_cotainer" id="${response.data.phone}">
-          ${chat}
+        <div class="message-feed media my-message" id="${response.data.phone}">
+        <div class="media-body">
+        <div class="mf-content">
+          ${chat}  
           <i class="fa fa-trash" aria-hidden="true" data-id="${response.data.id}" data-toggle="modal" data-target="#deleteChatModal"></i>
           <i class="fa fa-edit" aria-hidden="true" data-id="${response.data.id}" data-msg="${chat}" data-toggle="modal" data-target="#editChatModal"></i>
-          <span class="msg_time">${response.data.createdAt}</span>
-        </div>                           
+        </div>
+          <small class="mf-date msg_time"><i class="fa fa-clock-o"></i>${hoursAndMinutes}</small>
+        </div>   
+        </div>                      
         `;
         $('.chat-history').append(html)
         socket.emit('newChat', response.data)
 
-        scrollChat()
       }
       else{
         alert(data.msg)
@@ -378,14 +344,17 @@ socket.on('loadNewChat', function(data) {
   if(sender_id === data.sender_id && receiver_id === data.receiver_id){
 
     let html = `
-    <div class="msg_cotainer_send" id="${data.phone}">
-    ${data.message}
-    <span class="msg_time_send>${data.createdAt}</span>
-    </div> 
+    <div class="message-feed right other-message" id="${data.phone}">
+    <div class="media-body">
+    <div class="mf-content">
+        ${data.message}
+    </div>
+    <small class="mf-date msg_time_send"><i class="fa fa-clock-o"></i>${data.date}</small>
+    </div>
+    </div>
     `;
     $('.chat-history').append(html)
   }
-  scrollChat()
 
 })
 
@@ -400,24 +369,27 @@ socket.on('loadChats', function(data) {
     let addClass = ''
     let date = ''
     if(chats[x].sender_id === sender_id){
-      addClass = "msg_cotainer"
-      date = "msg_time"
+      addClass = "message-feed media my-message"
+      date = "mf-date msg_time"
     }
     else{
-      addClass = "msg_cotainer_send"
-      date = "msg_time_send"
+      addClass = "message-feed right other-message"
+      date = "mf-date msg_time_send"
     }
 
     html+= `
-  <div class="${addClass}" id="${chats[x].id}">
+    <div class="${addClass}" id="${chats[x].id}">
+    <div class="media-body">
+    <div class="mf-content">
     ${chats[x].message}`
-  if(chats[x].sender_id == sender_id){
-  html+=`<i class="fa fa-trash" aria-hidden="true" data-id="${chats[x].id}" data-toggle="modal" data-target="#deleteChatModal"></i>
+    if(chats[x].sender_id == sender_id){
+    html+=`<i class="fa fa-trash" aria-hidden="true" data-id="${chats[x].id}" data-toggle="modal" data-target="#deleteChatModal"></i>
     <i class="fa fa-edit" aria-hidden="true" data-id="${chats[x].id}" data-msg="${chats[x].message}" data-toggle="modal" data-target="#editChatModal"></i>`
-  }
-  html+=` <span class="${date}">${chats[x].createdAt}</span>
-  </div>
-    `
+    }
+    html+= `</div>
+      <small class="${date}"><i class="fa fa-clock-o"></i>${chats[x].date}</small>
+    </div>   
+    </div>`
   }
 
   if(chats == ''){
@@ -427,7 +399,6 @@ socket.on('loadChats', function(data) {
 
   $('.chat-history').append(html)
 
-  scrollChat()
 })
 
 // update user online status
@@ -448,11 +419,6 @@ socket.on('getOfflineUser', (data) => {
 
 })
 
-function scrollChat(){
-  $('.chat-history').animate({
-    scrollTop:$('.chat-history').offset().top + $('.chat-history')[0].scrollHeight
-  }, 0)
-}
 
 // delete chat
 
@@ -565,7 +531,7 @@ $('#create-contact-form').submit(function(event) {
 
 // update contact
 
-$(document).on('click', '#editContact', function() {
+$(document).on('click', '.fa-edit', function() {
 $('#edit-contact-id').val( $(this).attr('data-id') )
 $('#nameCont').val( $(this).attr('data-name') )
 
@@ -607,9 +573,9 @@ $('#'+data.id).find('.nameContact').text(data.name)
 
 // delete contact
 
-$(document).on('click', '#deleteContact', function() {
-  let msg = $(this).attr('data-name')
-  $('#delete-contact').text(msg)
+$(document).on('click', '.fa-trash', function() {
+  let name = $(this).attr('data-name')
+  $('#delete-contact').text(name)
 
   $('#delete-contact-id').val($(this).attr('data-id'))
 
@@ -619,8 +585,6 @@ $('#delete-contact-form').submit(function(event) {
 event.preventDefault()
 
 var id = $('#delete-contact-id').val()
-console.log(id)
-
 
 $.ajax({
   url: '/delete-contact',
@@ -685,73 +649,10 @@ socket.on('userInfoUpdated', function(data) {
 $('#'+data.id).find('.userName').text(data.name)
 })
 
-
-
-
-// menu hamburger
-
-const menuIcon = document.querySelector(".menuIcon");
-const hamburger = document.querySelector(".hamburger")
-const menu = document.querySelector(".menu")
-const closeIcon = document.querySelector(".closeIcon");
-const menuItems = document.querySelectorAll(".menuItem");
-
-closeIcon.style.display = "none";
-
-
-function toggleMenu() {
-if (menu.classList.contains("showMenu")) {
-  menu.classList.remove("showMenu");
-  closeIcon.style.display = "none";
-  menuIcon.style.display = "block";
-} else {
-  menu.classList.add("showMenu");
-  closeIcon.style.display = "block";
-  menuIcon.style.display = "none";
-}
-}
-
-menuItems.forEach( 
-function(menuItem) { 
-  menuItem.addEventListener("click", toggleMenu);
-}
-)
-
-hamburger.addEventListener("click", toggleMenu);
-
-
-
-function changeLanguage(language) {
-                  var element = document.getElementById("url");
-                  element.value = language;
-                  element.innerHTML = language;
-              }
-
-function showDropdown() {
-document.getElementById("myDropdown").classList.toggle("show");
-}
-
-// Close the dropdown if the user clicks outside of it
-window.onclick = function(event) {
-if (!event.target.matches('.dropbtn')) {
-  var dropdowns = document.getElementsByClassName("dropdown-content");
-  var i;
-  for (i = 0; i < dropdowns.length; i++) {
-    var openDropdown = dropdowns[i];
-    if (openDropdown.classList.contains('show')) {
-      openDropdown.classList.remove('show');
-    }
-  }
-}
-}
-
-
-function showRightMenu() {
-document.getElementById("myRightMenu").classList.toggle("show");
-}
-
-function actionMenu() {
-document.getElementById("actionMenu").classList.toggle("show");
+function closeChat() {
+  $('.chat-history').remove()
+  $('.actions').remove()
+  $('.contact-about').remove()
 }
 
 </script>

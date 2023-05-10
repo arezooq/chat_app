@@ -16,7 +16,11 @@ export default (sequelize, DataTypes) =>{
         message:{
             type: DataTypes.STRING,
             allowNull: false
-        }
+        },
+        date: {
+            type: DataTypes.STRING,
+            allowNull: false
+          },
     },
     {
         timestamps: true

@@ -126,7 +126,6 @@ const login = async (req, res) =>{
                     if( lastChat[x] === null ){
                         lastChat[x] = 'NO'
                     }
-                console.log(lastChat[x])
                 }
 
                 res.render('dashboard', { user: userData, users: users, contacts: contactsAll, lastChat: lastChat })
@@ -162,7 +161,8 @@ const saveChat = async (req, res) => {
         var chat = new Chat({
             sender_id: req.body.sender_id,
             receiver_id: req.body.receiver_id,
-            message: req.body.message
+            message: req.body.message,
+            date: req.body.date
         })
 
         var newChat = await chat.save()
