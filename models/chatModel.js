@@ -21,6 +21,10 @@ export default (sequelize, DataTypes) =>{
             type: DataTypes.STRING,
             allowNull: false
           },
+        isRead: {
+            type: DataTypes.STRING,
+            allowNull: false
+          },
     },
     {
         timestamps: true

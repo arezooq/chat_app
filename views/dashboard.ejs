@@ -11,17 +11,18 @@
           
           <div class="p-15">
               <div class="dropdown">
-                  <a class="btn btn-primary btn-block" href="" data-toggle="dropdown">Messages <i class="caret m-l-5"></i></a>
-  
-                  <ul class="dropdown-menu dm-icon w-100">
-                      <li><a href=""><i class="fa fa-envelope"></i> Messages</a></li>
-                      <li><a href=""><i class="fa fa-users"></i> Contacts</a></li>
-                  </ul>
+                  <a class="btn btn-primary btn-block" href="" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bars"></i> <i class="caret m-l-5"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a href="" id="infoUser" aria-hidden="true" data-id="<%= user.phone %>" data-name="<%= user.name %>" data-img="<%= user.image %>" data-is_online="<%= user.is_online%>" data-toggle="modal" data-target="#UserInfoModal"><i class="fa fa-user"></i>User Info</a></li>
+                      <li><a href="" id="createContacts" aria-hidden="true" data-toggle="modal" data-target="#createContactModal"><i class="fa fa-users"></i>Add Contact</a></li>
+                      <li><a href="/logout"><i class='fas fa-sign-out-alt'></i>Log Out</a></li>
+                    </ul>
               </div>
           </div>
           
           <ul class="list-group lg-alt">
-              <% if (users !== '') {
+              <% console.log(users)
+              if (users !== '') {
                   for (let i = 0; i < users.length; i++) {
                   %>
               <li class="list-group-item media user-list" data-name="<%= contacts[i].name %>" data-phone="<%= users[i].phone %>" data-is_online="<%= users[i].is_online %>" data-img="<%= users[i].image %>" href="">
@@ -35,6 +36,9 @@
                           <small class="list-group-item-text c-gray"><%= lastChat[i].message %></small>
                        <% } %>
                   </div>
+                  <% if(isReadChat[i] !== 0) { %>
+                  <div class="circleNotif"><%= isReadChat[i] %></div>
+                  <% } %>
               </li>
               <%
           }
@@ -57,9 +61,10 @@
           
               </ul>
           </div>
+
           <div class="chat-history">
             
-            </div>
+          </div>
   
           
           <div class="msb-reply chat-message">
@@ -245,6 +250,65 @@
     </div>
   </div>
 </div>
+
+<!-- Information User -->
+
+<div class="modal fade" id="UserInfoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">
+        <div id="infoImg" class="">
+          <img src="<%= user.image %>" alt="user" class="img-avatar">
+        </div>
+        <div id="infoIsOnline" class="media-body">
+          <%
+          if(user.is_online !== 0){
+            %>
+           <small class="list-group-item-heading">Online</small>
+          <%
+          }else {
+            %>
+            <small class="list-group-item-heading">Offline</small>
+          <%
+          }
+          %>
+        </div>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id" id="view-user-id">
+      
+        <div id="infoName" class="media-body">
+          <p style="font-weight: 900;">Name: </p> 
+          <small class="list-group-item-heading"><%= user.name %></small>
+        </div>
+        <br>
+        <div id="infoPhone" class="media-body">
+          <p style="font-weight: 900;">Phone Number: </p>
+          <small class="list-group-item-heading"><%= user.phone %></small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Information Contact -->
+
+<div class="modal fade" id="ContactInfoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content infoConatct">
+
+    </div>
+  </div>
+</div>
+
 <script>
 
   var sender_id = '<%= user.phone %>'
@@ -256,11 +320,15 @@ var socket = io('/user-namespace', {
 })
 
 $(document).ready(function() {
-
   $('.user-list').click(function(){
-
+    $('.chat-history').stop().animate({
+  scrollTop: $('.chat-history')[0].scrollHeight
+}, 800);$('.chat-history').stop().animate({
+  scrollTop: $('.chat-history')[0].scrollHeight
+}, 800);
     var userId = $(this).attr('data-phone')
     receiver_id = userId
+    $('.chat-history').attr('data-id' , receiver_id);
     var nameContact = $(this).attr('data-name')
     var imgContact = $(this).attr('data-img')
     var isOnlineContact = $(this).attr('data-is_online')
@@ -286,19 +354,20 @@ let actionBar =  `
           
   <ul class="dropdown-menu dropdown-menu-right">
     <li><a>Refresh</a></li>
-    <li><a>Message Settings</a></li>
+    <li><a href="" id="infoContact" data-id="${receiver_id}" data-phone="${receiver_id}" data-name="${nameContact}" data-img="${imgContact}" data-is_online="${isOnlineContact}" data-toggle="modal" data-target="#ContactInfoModal">Contact Info</a></li>
   </ul>
 </li>
-<li><i class="fa fa-close" onclick="closeChat()" style="font-size:24px"></i></li>
+<li>
+<i id="closeChat" class="fa fa-close"></i>
+</li>
 `
 
 $('.actions').append(actionBar)
     socket.emit('existsChat', { sender_id: sender_id, receiver_id: receiver_id })
+    socket.emit('isReadMessage', { sender_id: sender_id, receiver_id: receiver_id })
   })
-  
-  
-});
 
+});
 
 // chat save of user
 
@@ -311,7 +380,7 @@ var message = $('#message').val()
   $.ajax({
     url:'/save-chat',
     type: 'POST',
-    data: { sender_id: sender_id, receiver_id: receiver_id, message: message, date: hoursAndMinutes },
+    data: { sender_id: sender_id, receiver_id: receiver_id, message: message, date: hoursAndMinutes, isRead: false },
     success: function(response){
       if(response.success){
         $('#message').val('')
@@ -330,6 +399,9 @@ var message = $('#message').val()
         `;
         $('.chat-history').append(html)
         socket.emit('newChat', response.data)
+
+        socket.emit('notification', response.data)
+
 
       }
       else{
@@ -354,6 +426,7 @@ socket.on('loadNewChat', function(data) {
     </div>
     `;
     $('.chat-history').append(html)
+
   }
 
 })
@@ -364,37 +437,38 @@ socket.on('loadChats', function(data) {
   $('.chat-history').html('')
   var chats = data.chats  
   let html = ''
-  
-  for(let x=0; x < chats.length; x++){
-    let addClass = ''
-    let date = ''
-    if(chats[x].sender_id === sender_id){
-      addClass = "message-feed media my-message"
-      date = "mf-date msg_time"
-    }
-    else{
-      addClass = "message-feed right other-message"
-      date = "mf-date msg_time_send"
-    }
-
-    html+= `
-    <div class="${addClass}" id="${chats[x].id}">
-    <div class="media-body">
-    <div class="mf-content">
-    ${chats[x].message}`
-    if(chats[x].sender_id == sender_id){
-    html+=`<i class="fa fa-trash" aria-hidden="true" data-id="${chats[x].id}" data-toggle="modal" data-target="#deleteChatModal"></i>
-    <i class="fa fa-edit" aria-hidden="true" data-id="${chats[x].id}" data-msg="${chats[x].message}" data-toggle="modal" data-target="#editChatModal"></i>`
-    }
-    html+= `</div>
-      <small class="${date}"><i class="fa fa-clock-o"></i>${chats[x].date}</small>
-    </div>   
-    </div>`
-  }
-
   if(chats == ''){
     html+= `
     <h5 class="noMessage">No Messages Here yet...!</h5>`
+  }
+  else {
+    $('.noMessage').hide()
+    for(let x=0; x < chats.length; x++){
+      let addClass = ''
+      let date = ''
+      if(chats[x].sender_id === sender_id){
+        addClass = "message-feed media my-message"
+        date = "mf-date msg_time"
+      }
+      else{
+        addClass = "message-feed right other-message"
+        date = "mf-date msg_time_send"
+      }
+  
+      html+= `
+      <div class="${addClass}" id="${chats[x].id}">
+      <div class="media-body">
+      <div class="mf-content">
+      ${chats[x].message}`
+      if(chats[x].sender_id == sender_id){
+      html+=`<i class="fa fa-trash" aria-hidden="true" data-id="${chats[x].id}" data-toggle="modal" data-target="#deleteChatModal"></i>
+      <i class="fa fa-edit" aria-hidden="true" data-id="${chats[x].id}" data-msg="${chats[x].message}" data-toggle="modal" data-target="#editChatModal"></i>`
+      }
+      html+= `</div>
+        <small class="${date}"><i class="fa fa-clock-o"></i>${chats[x].date}</small>
+      </div>   
+      </div>`
+    }
   }
 
   $('.chat-history').append(html)
@@ -498,7 +572,7 @@ socket.on('chatMessageUpdated', function(data) {
 // contact save of user
 
 
-$(document).on('click', '.fa-user-plus', function() {
+$(document).on('click', '#createContacts', function() {
 $('#createContact').val( $(this).attr('data-id') )
 
 })
@@ -649,14 +723,83 @@ socket.on('userInfoUpdated', function(data) {
 $('#'+data.id).find('.userName').text(data.name)
 })
 
-function closeChat() {
-  $('.chat-history').remove()
-  $('.actions').remove()
-  $('.contact-about').remove()
-}
+$(document).on('click', '#closeChat', function() {
+
+  $('.ms-body').remove()
+  if($(document).on('click', '.user-list')){
+    $('.ms-body').show()
+    // $('.chat-history').remove()
+    // $('.actions').remove()
+    // $('.contact-about').remove()
+  }
+
+})
+
+
+
+$(document).on('click', '#infoUser', function () {
+  $('#view-user-id').val( $(this).attr('data-id') )
+
+})
+
+$(document).on('click', '#infoContact', function () {
+  let id = $(this).attr('data-id')
+  let img = $(this).attr('data-img')
+  let name = $(this).attr('data-name')
+  let phone = $(this).attr('data-phone')
+  let isOnline = $(this).attr('data-is_online')
+
+  let html = `
+  <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">
+        <div id="infoImg" class="">
+          <img src="${img}" alt="user" class="img-avatar">
+        </div>
+        <div id="infoIsOnline" class="media-body">`
+          if(isOnline !== 0){
+          html += `<small class="list-group-item-heading">Online</small>`
+          }else {
+          html += `<small class="list-group-item-heading">Offline</small>`
+          } 
+          html += `
+        </div>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id" id="view-user-id">
+      
+        <div id="infoName" class="media-body">
+          <p style="font-weight: 900;">Name: </p> 
+          <small class="list-group-item-heading">${name}</small>
+        </div>
+        <br>
+        <div id="infoPhone" class="media-body">
+          <p style="font-weight: 900;">Phone Number: </p>
+          <small class="list-group-item-heading">${phone}</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+      `
+
+      $('.infoConatct').append(html)
+})
+
+socket.on('showNotification', (data) => {
+  console.log(sender_id)
+  console.log(data.receiver_id)
+  
+  if(data.count !== 0 && sender_id === data.sender_id) {
+      $('.circleNotif').text(data.count)
+    }
+
+})
 
 </script>
-
 
 
 <%- include('layouts/footer.ejs') %>

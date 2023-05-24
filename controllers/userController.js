@@ -1,7 +1,6 @@
 import db from '../models/index.js';
 import bcrypt from 'bcrypt'
 import { Op } from 'sequelize'
-import Sequelize from "sequelize";
 
 const User = db.users
 const Chat = db.chats
@@ -99,8 +98,19 @@ const login = async (req, res) =>{
 
                 var users = []  
                 var lastChat = []
+                var isReadChat = []
 
                 for(let i =0; i < contacts.count; i++){
+                    let isRead = await Chat.findAndCountAll({
+                        where: {
+                            isRead: false,
+                            sender_id:contacts.rows[i].phone,
+                            receiver_id: userData.phone
+                        }
+                    })
+                    isReadChat.push(
+                        isRead.count
+                    )
                     users.push(await User.findOne({
                     where: {
                         phone: contacts.rows[i].phone
@@ -113,7 +123,7 @@ const login = async (req, res) =>{
                                 sender_id: userData.phone, receiver_id: contacts.rows[i].phone
                                 },
                                 {
-                                    sender_id: contacts.rows[i].phone, receiver_id: userData.phone
+                                sender_id: contacts.rows[i].phone, receiver_id: userData.phone
                                 }
                             ]
                         },
@@ -128,7 +138,9 @@ const login = async (req, res) =>{
                     }
                 }
 
-                res.render('dashboard', { user: userData, users: users, contacts: contactsAll, lastChat: lastChat })
+                    // console.log(users)
+
+                res.render('dashboard', { user: userData, users: users, contacts: contactsAll, lastChat: lastChat, isReadChat: isReadChat })
 
             }
             else{
@@ -162,7 +174,8 @@ const saveChat = async (req, res) => {
             sender_id: req.body.sender_id,
             receiver_id: req.body.receiver_id,
             message: req.body.message,
-            date: req.body.date
+            date: req.body.date,
+            isRead: req.body.isRead
         })
 
         var newChat = await chat.save()

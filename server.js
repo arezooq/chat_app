@@ -75,6 +75,18 @@ usp.on('connection', async (socket) => {
         socket.emit('loadChats', { chats: chats })
     })
 
+    // find isRead false for Notif
+    socket.on('notification', async (data) => {
+        var chats = await Chat.findAndCountAll({
+            where: {
+                receiver_id: data.sender_id, 
+                isRead: false
+            }
+        })
+        let count = chats.count
+        socket.emit('showNotification', {count: count, sender_id: data.sender_id, receiver_id: data.receiver_id})
+    })
+
     // delete chat
     socket.on('chatDeleted', function(id){
         socket.broadcast.emit('chatMessageDeleted', id)
@@ -98,6 +110,25 @@ usp.on('connection', async (socket) => {
            // update information user
            socket.on('userUpdated', function(data){
             socket.broadcast.emit('userInfoUpdated', data)
+        })
+
+        socket.on('isReadMessage', async function(data){
+            const contacts = await Contact.findAndCountAll({
+                where: {
+                    user_id: data.sender_id
+                }
+            })
+            for(let i =0; i < contacts.count; i++){
+
+                await Chat.update(
+                { isRead: true }, 
+                { where: {
+                        sender_id: contacts.rows[i].phone,
+                        receiver_id: data.sender_id
+                    }
+                }
+               )
+            }
         })
 })
 

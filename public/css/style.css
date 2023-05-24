@@ -1,5 +1,7 @@
 body {
   font-family: Roboto,sans-serif;
+  height: 100%;
+  overflow: hidden;
   font-size: 13px;
   line-height: 1.42857143;
   color: #767676;
@@ -8,6 +10,7 @@ body {
 
 #messages-main {
   position: relative;
+  height: 100vh;
   margin: 0 auto;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 1px 5px 0 rgba(0, 0, 0, 0.12);
 }
@@ -21,10 +24,11 @@ body {
   top: 0;
   border-right: 1px solid #eee;
   padding-bottom: 50px;
-  height: 500px;
+  height: 100%;
   width: 240px;
   background: #fff;
 }
+
 @media (min-width:768px) {
   #messages-main .ms-body {
   padding-left: 240px;
@@ -117,7 +121,7 @@ body {
   position: relative;
   margin-top: 30px;
   border-top: 1px solid #eee;
-  background: #f8f8f8;
+  background: #818080;
 }
 .four-zero, .lc-block {
   box-shadow: 0 1px 11px rgba(0, 0, 0, .27);
@@ -143,7 +147,7 @@ body {
   background: 0 0;
 }
 .msb-reply button:hover {
-  background: #f2f2f2;
+  background: #073c6e;
 }
 .img-avatar {
   height: 37px;
@@ -169,7 +173,7 @@ body {
   z-index: 3;
   float: right;
   margin-top: 7px;
-  position: relative;
+  align-items: flex-end;
 }
 .actions {
   list-style: none;
@@ -191,7 +195,17 @@ body {
   padding: 0 10px;
 }
 .ms-body{
-  background:#fff;    
+  background:#fff; 
+}
+
+.chat-history {
+  overflow-y: scroll;
+  height: 400px;
+  overflow-x: hidden;
+  scroll-behavior: auto;
+  scrollbar-width: 20px;
+  scrollbar-shadow-color: inset 0 0 5px gray;
+  
 }
 #ms-menu-trigger {
   user-select: none;
@@ -245,5 +259,22 @@ body {
   color:white !important;
   height: 60px !important;
   overflow-y: auto;
+}
+
+.circleNotif {
+  border-radius: 50%;
+  float: right;
+  margin-left: auto;
+  margin-right: 0;
+  width: 14px;
+  height: 14px;
+  padding: 8px;
+  background: rgb(32, 248, 32);
+  display: flex;
+  justify-content: center;
+  border: 1px solid #000;
+  color: #000;
+  align-items: center;
+  font: 10px Arial, sans-serif;
 }
 
