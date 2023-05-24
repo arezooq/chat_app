@@ -45,7 +45,7 @@ To clone the repository using an SSH key, including a certificate issued by your
 
 * Create database in phpmyadmin name database : node_sequelize_chatapp_db
 * Run nodemon server.js to start the application.
-* Connect to the Login page using on port 3002.
+* Connect to the Login page using on port 3003.
 
 
 ### Technologies Used
