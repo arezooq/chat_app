@@ -41,25 +41,43 @@ if(typeof message !== 'undefined'){
 <script>
 
 
+  const button = document.getElementById('register')
   const phone = document.getElementById('phone')
   const phoneHelpBlock = document.getElementById('phoneHelpBlock')
   const password = document.getElementById('password')
   const passwordHelpBlock = document.getElementById('passwordHelpBlock')
+  
+  let phoneCheck = false
+  let passCheck = false;
+  const disableButton = () => {
+      button.disabled = true;
+    }; 
+    const enableButton = () => {
+      button.disabled = false;
+    }; 
 
   phone.addEventListener('blur', (e) => {
     const value = e.currentTarget.value
 
-    const regex = /^[0-9]{11}$/;
+    const regex = /^09\d{9}$/;
 
   if(value === ""){
+    phoneCheck = false;
+    disableButton()
     phoneHelpBlock.innerText = "Please Enter Your Phone Number";
     phoneHelpBlock.style.color = "red";
   }
   else if(value.length = 11 && value.match(regex) ){
+     phoneCheck = true;
+    if(phoneCheck == true && passCheck == true){
+      enableButton()
+    }
     phoneHelpBlock.innerText = "Great!, You Enter A Valid Phone Number";
     phoneHelpBlock.style.color = "green";
   }
   else {
+    phoneCheck = false;
+       disableButton()
     phoneHelpBlock.innerText = "Your Phone Number is_invalid";
     phoneHelpBlock.style.color = "red";
   }
@@ -69,14 +87,22 @@ if(typeof message !== 'undefined'){
     const value = e.currentTarget.value
 
     if(value === ""){
+      passCheck = false;
+      disableButton()
       passwordHelpBlock.innerText = "Please Enter Your Password";
       passwordHelpBlock.style.color = "red";    
     }
     if(value.length < 8){
+      passCheck = false;
+      disableButton()
       passwordHelpBlock.innerText = "Your Password must be 8 character longs";
       passwordHelpBlock.style.color = "red";   
     }
     if(value.length >= 8){
+      passCheck = true;
+    if(phoneCheck == true && passCheck == true){
+      enableButton()
+    }
       passwordHelpBlock.innerText = "Great!, You Enter A Valid Password";
       passwordHelpBlock.style.color = "green";   
     }
