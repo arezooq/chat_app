@@ -1,13 +1,15 @@
 <%- include('layouts/header.ejs') %>
 
 <% 
-    if(typeof message !== 'undefined'){
-        %>
-            <h4 style="color: red;"><%= message %></h4>
-
-        <%
-    }
+if(typeof message !== 'undefined'){
+    %>
+    <p style="color: green;"><%= message %></p>
+    <%
+}
 %>
+<% if(messages.error) { %>
+  <p style="color: red;"><%= messages.error %></p>
+<% } %>
 <h1 class="d-grid gap-2 col-6 mx-auto align-items-center mt-5">Login</h1>
 
 

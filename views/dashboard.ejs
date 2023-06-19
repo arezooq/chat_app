@@ -21,7 +21,7 @@
           </div>
           
           <ul class="list-group lg-alt">
-              <% console.log(users)
+              <%
               if (users !== '') {
                   for (let i = 0; i < users.length; i++) {
                   %>
@@ -153,7 +153,7 @@
       <form id="create-contact-form">
       <div class="modal-body">
         <input type="text" name="nameContact" id="nameContact" placeholder="Enter Name" required>
-        <br>
+        </br></br>
         <input type="text" name="phoneContact" id="phoneContact" placeholder="Enter Phone Number" required>
       </div>
       <div class="modal-footer">
@@ -311,7 +311,7 @@
 
 <script>
 
-  var sender_id = '<%= user.phone %>'
+var sender_id = '<%= user.phone %>'
 var receiver_id;
 var socket = io('/user-namespace', {
   auth: {
@@ -401,6 +401,7 @@ var message = $('#message').val()
         socket.emit('newChat', response.data)
 
         socket.emit('notification', response.data)
+        $('.circleNotif').reload()
 
 
       }
@@ -516,7 +517,7 @@ $('#delete-chat-form').submit(function(event) {
       if(res.success == true){
         $('#'+id).remove()
         $('#deleteChatModal').modal('hide')
-        $('#deleteChatModal').hide()
+        location.reload();
 
         socket.emit('chatDeleted', id)
       }
@@ -551,8 +552,8 @@ $('#update-chat-form').submit(function(event) {
     data: { id: id, message: msg },
     success: function(res){
       if(res.success == true){
-        $('#editChatModal').hide()
-        location.reload();
+        $('#editChatModal').modal('hide')
+        $('.chat-history').reload();
         $('#'.id).find('.my-message').text(msg)
         $('#'.id).find('.fa-edit').attr('data-msg', msg)
         socket.emit('chatUpdated', { id: id, message: msg })
@@ -624,7 +625,6 @@ $.ajax({
   data: { id: id, name: name, user_id: sender_id },
   success: function(res){
     if(res.success === true){
-      console.log($('#'.id).find('.nameContact').text(name))
       $('#editContactModal').hide()
       $('#'.id).find('.nameContact').text(name)
       $('#'.id).find('#editContact').attr('data-name', name)
@@ -790,8 +790,6 @@ $(document).on('click', '#infoContact', function () {
 })
 
 socket.on('showNotification', (data) => {
-  console.log(sender_id)
-  console.log(data.receiver_id)
   
   if(data.count !== 0 && sender_id === data.sender_id) {
       $('.circleNotif').text(data.count)

@@ -3,24 +3,37 @@ import bodyParser from 'body-parser'
 import multer from 'multer'
 import userController from '../controllers/userController.js'
 import session from 'express-session'
-import auth from '../middlewares/auth.js'
 import { config } from 'dotenv'
-
+import passport from 'passport'
+import flash from 'express-flash'
+import db from '../models/index.js';
+import configurePassport from '../middlewares/auth.js';
 
 config()
+const User = db.users
 const user_route = express()
 
-const { SESSION_SECRET } = process.env
-user_route.use(session({ secret:SESSION_SECRET }))
+configurePassport(
+    passport,
+    phone => User.findOne({where: { phone : phone}}),
+    // phone => User.findByPk(phone),
+);
 
-user_route.use(bodyParser.json())
-user_route.use(bodyParser.urlencoded( { extended: true }))
 
 user_route.set('view engine', 'ejs')
 user_route.set('views', './views')
 
-user_route.use(express.static('public'))
+user_route.use(bodyParser.urlencoded( { extended: true }))
+user_route.use(flash())
+user_route.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false
+}))
+user_route.use(passport.initialize())
+user_route.use(passport.session())
 
+user_route.use(express.static('public'))
 
 var storage = multer.diskStorage({
     destination: function(req, file, cb){
@@ -33,11 +46,14 @@ var storage = multer.diskStorage({
 
 var upload = multer({ storage: storage })
 
-user_route.get('/register', userController.registerLoad)
-user_route.post('/register', upload.single('image'), userController.register)
+user_route.get('/register', checkNotAuthenticate, userController.registerLoad)
+user_route.post('/register', checkNotAuthenticate, upload.single('image'), userController.register)
 
-user_route.get('/', userController.loginLoad)
-user_route.post('/', userController.login)
+user_route.get('/login', checkNotAuthenticate, userController.loginLoad)
+user_route.post('/login', checkNotAuthenticate, passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login', failureFlash: true }), userController.login)
+
+user_route.get('/', checkAuthenticate, userController.dashboardLoad)
+// user_route.post('/', userController.dashboard)
 
 user_route.get('/logout', userController.logout)
 
@@ -51,13 +67,27 @@ user_route.post('/update-chat', userController.updateChat)
 
 user_route.post('/update-user', userController.updateInformationUser)
 
-
-
-// user_route.post('/dashboard', userController.loadDashboard)
-
 user_route.get('*', (req, res) => {
     res.redirect('/')
 })
+
+function checkAuthenticate(req, res, next) {
+    if(req.isAuthenticated()) {
+        return next()
+    }
+
+    res.redirect('/login')
+}
+
+function checkNotAuthenticate(req, res, next) {
+    console.log(req.isAuthenticated());
+    if(req.isAuthenticated()) {
+        console.log('hoiiii');
+       return res.redirect('/')
+    }
+    next()
+
+}
 
 
 export default user_route

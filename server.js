@@ -67,7 +67,7 @@ usp.on('connection', async (socket) => {
                 sender_id: data.sender_id, receiver_id: data.receiver_id
                 },
                 {
-                    sender_id: data.receiver_id, receiver_id: data.sender_id
+                sender_id: data.receiver_id, receiver_id: data.sender_id
                 }
             ]
         }

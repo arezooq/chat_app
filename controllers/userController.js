@@ -2,9 +2,13 @@ import db from '../models/index.js';
 import bcrypt from 'bcrypt'
 import { Op } from 'sequelize'
 
+
+
 const User = db.users
 const Chat = db.chats
 const Contact = db.contacts
+
+
 
 const registerLoad = async (req, res) => {
     try{
@@ -21,8 +25,6 @@ const register = async (req, res) => {
         const { name, phone, password, confirmPassword } = req.body;
         const passwordHash = await bcrypt.hash(req.body.password, 10)
 
-        
-        
     // Check required fields
     if (!name || !phone || !password || !confirmPassword) {
         res.render('register', { message: 'Please fill in all fields' });
@@ -34,26 +36,37 @@ const register = async (req, res) => {
     }
     
     // Check exist user with phone
-
     const existPhone = await User.findOne({ where: { phone: phone } });
     
     if (existPhone) {
             res.render('register', { message: 'A User with Phone already exist!' });
         }
+    // create user in DB with default image profile
+    if (typeof req.file === "undefined") {
+        const user = new User({
+            phone: req.body.phone,
+            name: req.body.name,
+            password: passwordHash,
+            image: "/images/default.png"
+        })
+
+        await user.save()
+        res.redirect('/')
+        res.render('dashboard', { message: 'You registered successfully' })
+    }
 
     // Create user in DB
     else{
+        const user = new User({
+            phone: req.body.phone,
+            name: req.body.name,
+            password: passwordHash,
+            image: '/images/'+req.file.filename,
+        })
 
-            const user = new User({
-                phone: req.body.phone,
-                name: req.body.name,
-                password: passwordHash,
-                image: '/images/'+req.file.filename,
-            })
-
-            await user.save()
-
-            res.render('login', { message: 'You registered successfully and you can now login'})
+        await user.save()
+        res.redirect('/')
+        res.render('dashboard', { message: 'You registered successfully' })
         }
 
     } catch (error){
@@ -73,9 +86,8 @@ const loginLoad = async (req, res) =>{
 
 const login = async (req, res) =>{
     try{
-
-        const password = req.body.password
         const phone = req.body.phone
+        const password = req.body.password
 
         const userData = await User.findOne({ where: { phone: phone } })
  
@@ -83,66 +95,9 @@ const login = async (req, res) =>{
             const passwordMatch = await bcrypt.compare(password, userData.password)
             
             if(passwordMatch){ 
-
-                const contacts = await Contact.findAndCountAll({
-                    where: {
-                        user_id: userData.phone
-                    }
-                })
-
-                const contactsAll = await Contact.findAll({
-                    where: {
-                        user_id: userData.phone
-                    }
-                })
-
-                var users = []  
-                var lastChat = []
-                var isReadChat = []
-
-                for(let i =0; i < contacts.count; i++){
-                    let isRead = await Chat.findAndCountAll({
-                        where: {
-                            isRead: false,
-                            sender_id:contacts.rows[i].phone,
-                            receiver_id: userData.phone
-                        }
-                    })
-                    isReadChat.push(
-                        isRead.count
-                    )
-                    users.push(await User.findOne({
-                    where: {
-                        phone: contacts.rows[i].phone
-                    }
-                   }))
-                   lastChat.push(
-                    await Chat.findOne({
-                        where: {
-                            [Op.or]: [{
-                                sender_id: userData.phone, receiver_id: contacts.rows[i].phone
-                                },
-                                {
-                                sender_id: contacts.rows[i].phone, receiver_id: userData.phone
-                                }
-                            ]
-                        },
-                        order: [['createdAt', 'DESC']]
-                    })
-                    
-                   )
-                }
-                for(let x=0; x<lastChat.length; x++){
-                    if( lastChat[x] === null ){
-                        lastChat[x] = 'NO'
-                    }
-                }
-
-                    // console.log(users)
-
-                res.render('dashboard', { user: userData, users: users, contacts: contactsAll, lastChat: lastChat, isReadChat: isReadChat })
-
-            }
+                req.user = userData
+                res.redirect('/');
+                 }
             else{
                 res.render('login',{ message: 'Phone and Password is Incorrect!' })
             }
@@ -167,6 +122,83 @@ const logout = async (req, res) =>{
         console.log(error.message)
     }
 }
+
+
+const dashboardLoad = async (req, res) => {
+    try{
+        const user = await req.user
+        console.log(user);
+        const contacts = await Contact.findAndCountAll({
+            where: {
+                user_id: user.phone
+            }
+        })
+
+        const contactsAll = await Contact.findAll({
+            where: {
+                user_id: user.phone
+            }
+        })
+
+        var users = []  
+        var lastChat = []
+        var isReadChat = []
+
+        for(let i =0; i < contacts.count; i++){
+            let isRead = await Chat.findAndCountAll({
+                where: {
+                    isRead: false,
+                    sender_id:contacts.rows[i].phone,
+                    receiver_id: user.phone
+                }
+            })
+            isReadChat.push(
+                isRead.count
+            )
+            users.push(await User.findOne({
+            where: {
+                phone: contacts.rows[i].phone
+            }
+           }))
+           lastChat.push(
+            await Chat.findOne({
+                where: {
+                    [Op.or]: [{
+                        sender_id: user.phone, receiver_id: contacts.rows[i].phone
+                        },
+                        {
+                        sender_id: contacts.rows[i].phone, receiver_id: user.phone
+                        }
+                    ]
+                },
+                order: [['createdAt', 'DESC']]
+            })
+            
+           )
+        }
+        for(let x=0; x<lastChat.length; x++){
+            if( lastChat[x] === null ){
+                lastChat[x] = 'NO'
+            }
+        }
+        res.render('dashboard', { user: user, users: users, contacts: contactsAll, lastChat: lastChat, isReadChat: isReadChat  })
+    } catch(error){
+        console.log(error.message)
+    }
+}
+
+
+// const dashboard = async (req, res) =>{
+//     try{
+
+
+//         res.redirect('/')
+//         res.render('dashboard', { user: req.user, users: users, contacts: contactsAll, lastChat: lastChat, isReadChat: isReadChat })
+
+//     } catch (error){
+//         console.log(error.message)
+//     }
+// }
 
 const saveChat = async (req, res) => {
     try {
@@ -282,6 +314,8 @@ export default {
     registerLoad,
     loginLoad,
     login,
+    dashboardLoad,
+    // dashboard,
     logout,
     saveChat,
     deleteChat,
@@ -289,6 +323,5 @@ export default {
     saveContact,
     deleteContact,
     updateContact,
-    updateInformationUser
-    // loadDashboard
+    updateInformationUser,
 }
