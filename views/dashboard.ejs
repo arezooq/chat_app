@@ -14,6 +14,7 @@
                   <a class="btn btn-primary btn-block" href="" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bars"></i> <i class="caret m-l-5"></i></a>
                     <ul class="dropdown-menu dropdown-menu-right">
                       <li><a href="" id="infoUser" aria-hidden="true" data-id="<%= user.phone %>" data-name="<%= user.name %>" data-img="<%= user.image %>" data-is_online="<%= user.is_online%>" data-toggle="modal" data-target="#UserInfoModal"><i class="fa fa-user"></i>User Info</a></li>
+                      <li><a href="" id="editUser" aria-hidden="true" data-id="<%= user.phone %>" data-name="<%= user.name %>" data-img="<%= user.image %>" data-is_online="<%= user.is_online%>" data-toggle="modal" data-target="#editUserModal"><i class="fa fa-user"></i>Edit Info</a></li>
                       <li><a href="" id="createContacts" aria-hidden="true" data-toggle="modal" data-target="#createContactModal"><i class="fa fa-users"></i>Add Contact</a></li>
                       <li><a href="/logout"><i class='fas fa-sign-out-alt'></i>Log Out</a></li>
                     </ul>
@@ -43,10 +44,7 @@
               <%
           }
       }
-      if(users == ''){
       %>
-      <h5 class="">You Have No Contacts yet...!</h5>
-      <% } %>
           </ul>         
       </div>
       
@@ -321,6 +319,7 @@ var socket = io('/user-namespace', {
 
 $(document).ready(function() {
   $('.user-list').click(function(){
+    $('.circleNotif').hide()
     $('.chat-history').stop().animate({
   scrollTop: $('.chat-history')[0].scrollHeight
 }, 800);$('.chat-history').stop().animate({
@@ -348,18 +347,9 @@ $('.contact-about').append(html)
 
 let actionBar =  `
 <li><a><i class="fa fa-trash" aria-hidden="true" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#deleteContactModal"></i></a></li>
-<li><a><i class="fa fa-edit" aria-hidden="true" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#editContactModal"></i></a></li>                          
-<li class="dropdown">
-  <a data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bars"></i></a>
-          
-  <ul class="dropdown-menu dropdown-menu-right">
-    <li><a>Refresh</a></li>
-    <li><a href="" id="infoContact" data-id="${receiver_id}" data-phone="${receiver_id}" data-name="${nameContact}" data-img="${imgContact}" data-is_online="${isOnlineContact}" data-toggle="modal" data-target="#ContactInfoModal">Contact Info</a></li>
-  </ul>
-</li>
-<li>
-<i id="closeChat" class="fa fa-close"></i>
-</li>
+<li><a><i class="fa fa-edit" aria-hidden="true" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#editContactModal"></i></a></li>
+<li><a href="" id="infoContact" data-id="${receiver_id}" data-phone="${receiver_id}" data-name="${nameContact}" data-img="${imgContact}" data-is_online="${isOnlineContact}" data-toggle="modal" data-target="#ContactInfoModal"><i class="fa fa-address-book" aria-hidden="true"></i></a></li>
+<li><i id="closeChat" class="fa fa-close"></i></li>
 `
 
 $('.actions').append(actionBar)
@@ -397,13 +387,11 @@ var message = $('#message').val()
         </div>   
         </div>                      
         `;
+        $('.noMessage').hide()
         $('.chat-history').append(html)
         socket.emit('newChat', response.data)
 
         socket.emit('notification', response.data)
-        $('.circleNotif').reload()
-
-
       }
       else{
         alert(data.msg)
@@ -438,12 +426,6 @@ socket.on('loadChats', function(data) {
   $('.chat-history').html('')
   var chats = data.chats  
   let html = ''
-  if(chats == ''){
-    html+= `
-    <h5 class="noMessage">No Messages Here yet...!</h5>`
-  }
-  else {
-    $('.noMessage').hide()
     for(let x=0; x < chats.length; x++){
       let addClass = ''
       let date = ''
@@ -470,6 +452,8 @@ socket.on('loadChats', function(data) {
       </div>   
       </div>`
     }
+    if(chats == ''){
+    html+= '<h5 class="noMessage">No Messages Here yet...!</h5>'
   }
 
   $('.chat-history').append(html)
@@ -552,8 +536,8 @@ $('#update-chat-form').submit(function(event) {
     data: { id: id, message: msg },
     success: function(res){
       if(res.success == true){
-        $('#editChatModal').modal('hide')
-        $('.chat-history').reload();
+        $('#editChatModal').hide()
+        location.reload()
         $('#'.id).find('.my-message').text(msg)
         $('#'.id).find('.fa-edit').attr('data-msg', msg)
         socket.emit('chatUpdated', { id: id, message: msg })
@@ -724,18 +708,8 @@ $('#'+data.id).find('.userName').text(data.name)
 })
 
 $(document).on('click', '#closeChat', function() {
-
-  $('.ms-body').remove()
-  if($(document).on('click', '.user-list')){
-    $('.ms-body').show()
-    // $('.chat-history').remove()
-    // $('.actions').remove()
-    // $('.contact-about').remove()
-  }
-
+  $('.ms-body').load(' .ms-body')
 })
-
-
 
 $(document).on('click', '#infoUser', function () {
   $('#view-user-id').val( $(this).attr('data-id') )
@@ -782,7 +756,7 @@ $(document).on('click', '#infoContact', function () {
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" id="closeContact" class="btn btn-secondary" data-dismiss="modal">Close</button>
       </div>
       `
 
@@ -790,11 +764,14 @@ $(document).on('click', '#infoContact', function () {
 })
 
 socket.on('showNotification', (data) => {
-  
-  if(data.count !== 0 && sender_id === data.sender_id) {
+  setTimeout(() => {
+    $('.circleNotif').load(' .circleNotif')
+    if(data.count !== 0 && sender_id === data.sender_id) {
       $('.circleNotif').text(data.count)
-    }
-
+    } else {
+      $('.circleNotif').load(' .circleNotif')
+      $('.circleNotif').hide()
+    }}, 1000);
 })
 
 </script>
