@@ -709,8 +709,9 @@ $('#'+data.id).find('.userName').text(data.name)
 })
 
 $(document).on('click', '#closeChat', function() {
-  $('.ms-body').load(' .ms-body')
+location.reload()
 })
+
 
 $(document).on('click', '#infoUser', function () {
   $('#view-user-id').val( $(this).attr('data-id') )
