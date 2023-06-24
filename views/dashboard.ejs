@@ -387,7 +387,7 @@ var message = $('#message').val()
         </div>   
         </div>                      
         `;
-        $('.noMessage').hide()
+        $('.noMessage').remove()
         $('.chat-history').append(html)
         socket.emit('newChat', response.data)
 
@@ -414,6 +414,7 @@ socket.on('loadNewChat', function(data) {
     </div>
     </div>
     `;
+    $('.noMessage').remove()
     $('.chat-history').append(html)
 
   }
