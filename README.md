@@ -52,7 +52,7 @@ To clone the repository using an SSH key, including a certificate issued by your
 
 * [NodeJS](https://nodejs.org/) This is a cross-platform runtime environment built on Chrome's V8 JavaScript engine used in running JavaScript codes on the server. It allows for installation and managing of dependencies and communication with databases.
 
-* [ExpressJS](https://www.expresjs.org/) This is a NodeJS web application framework.
+* [ExpressJS](https://www.expressjs.org/) This is a NodeJS web application framework.
 
 * [Embedded JavaScript templating.](https://ejs.co/)  EJS is a simple templating language that lets you generate HTML markup with plain JavaScript. No religiousness about how to organize things. No reinvention of iteration and control-flow. It's just plain JavaScript.
 
