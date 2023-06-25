@@ -1,7 +1,7 @@
 import db from "../models/index.js";
 import bcrypt from "bcrypt";
 import { Op } from "sequelize";
-import joi from "joi";
+import { body } from "express-validator";
 
 const User = db.users;
 const Chat = db.chats;
@@ -20,6 +20,14 @@ const register = async (req, res) => {
     const { name, phone, password, confirmPassword } = req.body;
     const passwordHash = await bcrypt.hash(req.body.password, 10);
 
+    const regex = /^09\d{9}$/;
+    if(!body('phone').isLength(11).contains(regex)){
+      res.render("register", { message: "Your Phone Number is_invalid" });
+    }
+
+    if(!body('password').isLength(8)){
+      res.render("register", { message: "Your Password must be 8 character longs" });
+    }
     // Check required fields
     if (!name || !phone || !password || !confirmPassword) {
       res.render("register", { message: "Please fill in all fields" });
@@ -74,7 +82,7 @@ const login = async (req, res) => {
     const password = req.body.password;
 
     const regex = /^09\d{9}$/;
-    if(phone === joi.string().length(11).pattern(regex)){
+    if(body('phone').isLength(11).contains(regex)){
       const userData = await User.findOne({ where: { phone: phone } });
           if (userData) {
             const passwordMatch = await bcrypt.compare(password, userData.password);
