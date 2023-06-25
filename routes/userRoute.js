@@ -8,6 +8,8 @@ import passport from "passport";
 import flash from "express-flash";
 import db from "../models/index.js";
 import configurePassport from "../middlewares/auth.js";
+import checkAuthenticate from "../middlewares/checkAuthenticate.js";
+import checkNotAuthenticate from "../middlewares/checkNotAuthenticate.js";
 
 config();
 const User = db.users;
@@ -16,9 +18,6 @@ const user_route = express();
 configurePassport(passport, (phone) =>
   User.findOne({ where: { phone: phone } })
 );
-
-user_route.set("view engine", "ejs");
-user_route.set("views", "./views");
 
 user_route.use(bodyParser.urlencoded({ extended: true }));
 user_route.use(flash());
@@ -82,20 +81,5 @@ user_route.post("/update-user", userController.updateInformationUser);
 user_route.get("*", (req, res) => {
   res.redirect("/");
 });
-
-function checkAuthenticate(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-
-  res.redirect("/login");
-}
-
-function checkNotAuthenticate(req, res, next) {
-  if (req.isAuthenticated()) {
-    return res.redirect("/");
-  }
-  next();
-}
 
 export default user_route;

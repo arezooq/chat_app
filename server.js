@@ -1,6 +1,6 @@
 import { config } from "dotenv";
 import express from "express";
-import userRoute from "./routes/userRoute.js";
+import user_route from "./routes/userRoute.js";
 import bodyParser from "body-parser";
 import { Server } from "socket.io";
 import { createServer } from "http";
@@ -132,7 +132,9 @@ usp.on("connection", async (socket) => {
   });
 });
 
-app.use("/", userRoute);
 app.use(bodyParser.urlencoded({ extended: true }));
+app.set("view engine", "ejs");
+app.set("views", "./views");
+app.use("/", user_route);
 
 server.listen(PORT, () => console.log(`Server is running port ${PORT}`));

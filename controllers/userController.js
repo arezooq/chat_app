@@ -1,6 +1,7 @@
 import db from "../models/index.js";
 import bcrypt from "bcrypt";
 import { Op } from "sequelize";
+import joi from "joi";
 
 const User = db.users;
 const Chat = db.chats;
@@ -35,33 +36,25 @@ const register = async (req, res) => {
     if (existPhone) {
       res.render("register", { message: "A User with Phone already exist!" });
     }
-    // create user in DB with default image profile
-    if (typeof req.file === "undefined") {
-      const user = new User({
+
+    let imageProfile;
+
+    if( req.file == undefined) {
+      imageProfile = "/images/default.png"
+    } else {
+      imageProfile = "/images/" + req.file.filename
+    }
+
+    const user = new User({
         phone: req.body.phone,
         name: req.body.name,
         password: passwordHash,
-        image: "/images/default.png",
+        image: imageProfile,
       });
 
       await user.save();
-      res.redirect("/");
-      res.render("dashboard", { message: "You registered successfully" });
-    }
+      res.redirect("/login");
 
-    // Create user in DB
-    else {
-      const user = new User({
-        phone: req.body.phone,
-        name: req.body.name,
-        password: passwordHash,
-        image: "/images/" + req.file.filename,
-      });
-
-      await user.save();
-      res.redirect("/");
-      res.render("dashboard", { message: "You registered successfully" });
-    }
   } catch (error) {
     console.log(error.message);
   }
@@ -80,22 +73,29 @@ const login = async (req, res) => {
     const phone = req.body.phone;
     const password = req.body.password;
 
-    const userData = await User.findOne({ where: { phone: phone } });
-
-    if (userData) {
-      const passwordMatch = await bcrypt.compare(password, userData.password);
-
-      if (passwordMatch) {
-        req.user = userData;
-        res.redirect("/");
-      } else {
-        res.render("login", { message: "Phone and Password is Incorrect!" });
-      }
-    } else {
+    const regex = /^09\d{9}$/;
+    if(phone === joi.string().length(11).pattern(regex)){
+      const userData = await User.findOne({ where: { phone: phone } });
+          if (userData) {
+            const passwordMatch = await bcrypt.compare(password, userData.password);
+      
+            if (passwordMatch) {
+              req.user = userData;
+              res.redirect("/");
+            } else {
+              res.render("login", { message: "Phone and Password is Incorrect!" });
+            }
+          } else {
+            res.render("login", { message: "Phone and Password is Incorrect!" });
+          }
+    }
+    else {
       res.render("login", { message: "Phone and Password is Incorrect!" });
     }
+
   } catch (error) {
     console.log(error.message);
+    res.status(404).send({ success: false });
   }
 };
 
@@ -111,7 +111,6 @@ const logout = async (req, res) => {
 const dashboardLoad = async (req, res) => {
   try {
     const user = await req.user;
-    console.log(user);
     const contacts = await Contact.findAndCountAll({
       where: {
         user_id: user.phone,
@@ -191,10 +190,10 @@ const saveChat = async (req, res) => {
 
     var newChat = await chat.save();
     res
-      .status(200)
+      .status(201)
       .send({ success: true, msg: "chat inserted!", data: newChat });
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    res.status(500).send({ success: false, msg: error.message });
   }
 };
 
@@ -203,7 +202,7 @@ const deleteChat = async (req, res) => {
     await Chat.destroy({ where: { id: req.body.id } });
     res.status(200).send({ success: true });
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    res.status(500).send({ success: false, msg: error.message });
   }
 };
 
@@ -214,7 +213,7 @@ const updateChat = async (req, res) => {
     chat.save();
     res.status(200).send({ success: true });
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    res.status(500).send({ success: false, msg: error.message });
   }
 };
 
@@ -231,13 +230,13 @@ const saveContact = async (req, res) => {
 
       await contact.save();
       res
-        .status(200)
+        .status(201)
         .send({ success: true, msg: "contact created!", userData: userData });
     } else {
       res.send({ success: false, msg: "contact Not Join!" });
     }
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    res.status(500).send({ success: false, msg: error.message });
   }
 };
 
@@ -265,7 +264,7 @@ const deleteContact = async (req, res) => {
     })
     res.status(200).send({ success: true });
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    res.status(500).send({ success: false, msg: error.message });
   }
 };
 
@@ -281,7 +280,7 @@ const updateContact = async (req, res) => {
     contact.save();
     res.status(200).send({ success: true });
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    res.status(500).send({ success: false, msg: error.message });
   }
 };
 
@@ -292,7 +291,7 @@ const updateInformationUser = async (req, res) => {
     userInfo.save();
     res.status(200).send({ success: true });
   } catch (error) {
-    res.status(400).send({ success: false, msg: error.message });
+    res.status(500).send({ success: false, msg: error.message });
   }
 };
 

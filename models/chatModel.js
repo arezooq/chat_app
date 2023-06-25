@@ -19,6 +19,7 @@ export default (sequelize, DataTypes) => {
       date: {
         type: DataTypes.STRING,
         allowNull: false,
+        isDate: true,
       },
       isRead: {
         type: DataTypes.STRING,
