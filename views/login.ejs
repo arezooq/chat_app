@@ -1,0 +1,65 @@
+<%- include('layouts/header.ejs') %> <% if(typeof message !== 'undefined'){ %>
+<p style="color: green"><%= message %></p>
+<% } %> <% if(messages.error) { %>
+<p style="color: red"><%= messages.error %></p>
+<% } %>
+<h1 class="d-grid gap-2 col-6 mx-auto align-items-center mt-5">Login</h1>
+
+<form
+  action=""
+  method="post"
+  class="d-grid gap-2 col-6 mx-auto align-items-center mt-5"
+>
+  <div class="mb-3 mt-3">
+    <input
+      type="text"
+      class="form-control"
+      name="phone"
+      id="phone"
+      placeholder="Enter Phone Number"
+    />
+  </div>
+  <div class="mb-3 mt-3">
+    <input
+      type="password"
+      class="form-control"
+      name="password"
+      id="password"
+      placeholder="Enter Password"
+    />
+  </div>
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3 mx-auto">
+    <button type="submit" class="btn btn-primary" id="login" disabled>
+      Login
+    </button>
+    <a class="btn btn-primary" href="/register" role="button">Signup</a>
+  </div>
+</form>
+
+<script>
+  const submitLogin = document.getElementById("login");
+  const inputPhone = document.getElementById("phone");
+  const inputPassword = document.getElementById("password");
+
+  inputPhone.addEventListener("keypress", (e) => {
+    const value = e.currentTarget.value;
+
+    if (value === "") {
+      submitLogin.disabled = true;
+    } else {
+      submitLogin.disabled = false;
+    }
+  });
+
+  inputPassword.addEventListener("keypress", (e) => {
+    const value = e.currentTarget.value;
+
+    if (value === "") {
+      submitLogin.disabled = true;
+    } else {
+      submitLogin.disabled = false;
+    }
+  });
+</script>
+
+<%- include('layouts/footer.ejs') %>

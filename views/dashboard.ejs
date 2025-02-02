@@ -1,0 +1,782 @@
+<%- include('layouts/header.ejs') %>
+
+
+<div class="container bootstrap snippets bootdey">
+  <div class="tile tile-alt" id="messages-main">
+      <div class="ms-menu">
+          <div class="ms-user clearfix">
+              <img src="<%= user.image %>" alt="" class="img-avatar pull-left">
+              <div class="nameUser" data-id="<%= user.name %>">Signed in as <br> <%= user.name %></div>
+          </div>
+          
+          <div class="p-15">
+              <div class="dropdown">
+                  <a class="btn btn-primary btn-block" href="" data-toggle="dropdown" aria-expanded="true"><i class="fa fa-bars"></i> <i class="caret m-l-5"></i></a>
+                    <ul class="dropdown-menu dropdown-menu-right">
+                      <li><a href="" id="infoUser" aria-hidden="true" data-id="<%= user.phone %>" data-name="<%= user.name %>" data-img="<%= user.image %>" data-is_online="<%= user.is_online%>" data-toggle="modal" data-target="#UserInfoModal"><i class="fa fa-user"></i>User Info</a></li>
+                      <li><a href="" id="editUser" aria-hidden="true" data-id="<%= user.phone %>" data-name="<%= user.name %>" data-img="<%= user.image %>" data-is_online="<%= user.is_online%>" data-toggle="modal" data-target="#editUserModal"><i class="fa fa-user"></i>Edit Info</a></li>
+                      <li><a href="" id="createContacts" aria-hidden="true" data-toggle="modal" data-target="#createContactModal"><i class="fa fa-users"></i>Add Contact</a></li>
+                      <li><a href="/logout"><i class='fas fa-sign-out-alt'></i>Log Out</a></li>
+                    </ul>
+              </div>
+          </div>
+          
+          <ul class="list-group lg-alt">
+              <%
+              if (users !== '') {
+                  for (let i = 0; i < users.length; i++) {
+                  %>
+              <li class="list-group-item media user-list" data-name="<%= contacts[i].name %>" data-phone="<%= users[i].phone %>" data-is_online="<%= users[i].is_online %>" data-img="<%= users[i].image %>" href="">
+                  <div class="pull-left">
+                      <img src="<%= users[i].image %>" alt="contact" class="img-avatar">
+                  </div>
+                  <div class="media-body">
+                      <small class="list-group-item-heading"><%= contacts[i].name %></small>
+                      <br>
+                      <% if( lastChat !== 'NO' ) { %>   
+                          <small class="list-group-item-text c-gray"><%= lastChat[i].message %></small>
+                       <% } %>
+                  </div>
+                  <% if(isReadChat[i] !== 0) { %>
+                  <div class="circleNotif"><%= isReadChat[i] %></div>
+                  <% } %>
+              </li>
+              <%
+          }
+      }
+      %>
+          </ul>         
+      </div>
+      
+      <div class="ms-body">
+          <div class="action-header clearfix">
+              
+              <div class="pull-left hidden-xs contact-about">
+              
+              </div>
+               
+              <ul class="ah-actions actions">
+          
+              </ul>
+          </div>
+
+          <div class="chat-history">
+            
+          </div>
+  
+          
+          <div class="msb-reply chat-message">
+            <form action="" id="chat-form">
+            <div class="input-group mb-0">
+              <input type="text" name="message" id="message" class="form-control" placeholder="Enter text here...">                                    
+              <div class="input-group-append">
+                  <button type="submit">
+                  <i class="fas fa-location-arrow"></i>
+                  </button>
+              </div>
+            </div>
+          </form>
+          </div>
+      </div>
+
+  
+ <!-- Delete Chat -->
+    
+
+<div class="modal fade" id="deleteChatModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Delete Chat</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="delete-chat-form">
+      <div class="modal-body">
+        <input type="hidden" name="id" id="delete-message-id">
+        <p>Are you sure you want to delete below Message?</p>
+        <p><b id="delete-message"></b></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-danger">Delete</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+ <!-- Edit Chat -->
+
+
+<div class="modal fade" id="editChatModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit Chat</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="update-chat-form">
+      <div class="modal-body">
+        <input type="hidden" name="id" id="edit-message-id">
+        <input type="text" name="message" id="update-message" placeholder="Enter Message" required>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" id="edit" class="btn btn-primary">Edit</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+ <!-- Add Contact -->
+
+
+ <div class="modal fade" id="createContactModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Create Contact</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="create-contact-form">
+      <div class="modal-body">
+        <input type="text" name="nameContact" id="nameContact" placeholder="Enter Name" required>
+        </br></br>
+        <input type="text" name="phoneContact" id="phoneContact" placeholder="Enter Phone Number" required>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Create Contact</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Delete Contact -->
+    
+
+    <div class="modal fade" id="deleteContactModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Delete Contact</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+    
+          <form id="delete-contact-form">
+          <div class="modal-body">
+            <input type="hidden" name="id" id="delete-contact-id">
+            <p>Are you sure you want to delete below Contact?</p>
+            <p><b id="delete-contact"></b></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+
+ <!-- Edit Contact -->
+
+
+<div class="modal fade" id="editContactModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit Contact</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="update-contact-form">
+      <div class="modal-body">
+        <input type="hidden" name="id" id="edit-contact-id">
+        <input type="text" name="nameCont" id="nameCont" placeholder="Enter Name" required>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Edit Contact</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+<!-- Edit User -->
+
+
+<div class="modal fade" id="editUserModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Edit User</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      <form id="update-user-form">
+      <div class="modal-body">
+        <input type="hidden" name="id" id="edit-user-id">
+        <input type="text" name="nameUser" id="nameUser" placeholder="Enter Name" required>
+        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Edit Information</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Information User -->
+
+<div class="modal fade" id="UserInfoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">
+        <div id="infoImg" class="">
+          <img src="<%= user.image %>" alt="user" class="img-avatar">
+        </div>
+        <div id="infoIsOnline" class="media-body">
+          <%
+          if(user.is_online !== 0){
+            %>
+           <small class="list-group-item-heading">Online</small>
+          <%
+          }else {
+            %>
+            <small class="list-group-item-heading">Offline</small>
+          <%
+          }
+          %>
+        </div>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id" id="view-user-id">
+      
+        <div id="infoName" class="media-body">
+          <p style="font-weight: 900;">Name: </p> 
+          <small class="list-group-item-heading"><%= user.name %></small>
+        </div>
+        <br>
+        <div id="infoPhone" class="media-body">
+          <p style="font-weight: 900;">Phone Number: </p>
+          <small class="list-group-item-heading"><%= user.phone %></small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Information Contact -->
+
+<div class="modal fade" id="ContactInfoModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content infoConatct">
+
+    </div>
+  </div>
+</div>
+
+<script>
+
+var sender_id = '<%= user.phone %>'
+var receiver_id;
+var socket = io('/user-namespace', {
+  auth: {
+    token: '<%= user.phone %>'
+  }
+})
+
+$(document).ready(function() {
+  $('.user-list').click(function(){
+    $('.circleNotif').hide()
+    $('.chat-history').stop().animate({
+  scrollTop: $('.chat-history')[0].scrollHeight
+}, 800);$('.chat-history').stop().animate({
+  scrollTop: $('.chat-history')[0].scrollHeight
+}, 800);
+    var userId = $(this).attr('data-phone')
+    receiver_id = userId
+    $('.chat-history').attr('data-id' , receiver_id);
+    var nameContact = $(this).attr('data-name')
+    var imgContact = $(this).attr('data-img')
+    var isOnlineContact = $(this).attr('data-is_online')
+
+let html =  `
+<img src="${imgContact}" alt="contactAbout" class="img-avatar m-r-10">
+<div class="lv-avatar pull-left">         
+</div>
+  <span>${nameContact}</span>`
+  if(isOnlineContact == 1){
+    html+= `<small><p style="color:green" id="${receiver_id}-status" data-id="${isOnlineContact}"> online </p></small>`
+  } else {
+    html+= `<small><p style="color:red" id="${receiver_id}-status"  data-id="${isOnlineContact}"> offline </p></small>`
+  }  
+
+$('.contact-about').append(html)
+
+let actionBar =  `
+<li><a><i class="fa fa-trash" aria-hidden="true" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#deleteContactModal"></i></a></li>
+<li><a><i class="fa fa-edit" aria-hidden="true" data-id="${receiver_id}" data-name="${nameContact}" data-toggle="modal" data-target="#editContactModal"></i></a></li>
+<li><a href="" id="infoContact" data-id="${receiver_id}" data-phone="${receiver_id}" data-name="${nameContact}" data-img="${imgContact}" data-is_online="${isOnlineContact}" data-toggle="modal" data-target="#ContactInfoModal"><i class="fa fa-address-book" aria-hidden="true"></i></a></li>
+<li><i id="closeChat" class="fa fa-close"></i></li>
+`
+
+$('.actions').append(actionBar)
+    socket.emit('existsChat', { sender_id: sender_id, receiver_id: receiver_id })
+    socket.emit('isReadMessage', { sender_id: sender_id, receiver_id: receiver_id })
+  })
+
+});
+
+// chat save of user
+
+$('.chat-message').submit(function(event){
+  event.preventDefault()
+  let date = new Date()
+  let hoursAndMinutes = date.toLocaleDateString('en-us', { weekday:"long", year:"numeric", month:"short", day:"numeric", hour: '2-digit', minute: '2-digit',}) 
+var message = $('#message').val()
+
+  $.ajax({
+    url:'/save-chat',
+    type: 'POST',
+    data: { sender_id: sender_id, receiver_id: receiver_id, message: message, date: hoursAndMinutes, isRead: false },
+    success: function(response){
+      if(response.success){
+        $('#message').val('')
+        let chat = response.data.message
+        let html = `
+        <div class="message-feed media my-message" id="${response.data.phone}">
+        <div class="media-body">
+        <div class="mf-content">
+          ${chat}  
+          <i class="fa fa-trash" aria-hidden="true" data-id="${response.data.id}" data-toggle="modal" data-target="#deleteChatModal"></i>
+          <i class="fa fa-edit" aria-hidden="true" data-id="${response.data.id}" data-msg="${chat}" data-toggle="modal" data-target="#editChatModal"></i>
+        </div>
+          <small class="mf-date msg_time"><i class="fa fa-clock-o"></i>${hoursAndMinutes}</small>
+        </div>   
+        </div>                      
+        `;
+        $('.noMessage').remove()
+        $('.chat-history').append(html)
+        socket.emit('newChat', response.data)
+
+        socket.emit('notification', response.data)
+      }
+      else{
+        alert(data.msg)
+      }
+    }
+  })
+})
+
+socket.on('loadNewChat', function(data) {
+  
+  if(sender_id === data.sender_id && receiver_id === data.receiver_id){
+
+    let html = `
+    <div class="message-feed right other-message" id="${data.phone}">
+    <div class="media-body">
+    <div class="mf-content">
+        ${data.message}
+    </div>
+    <small class="mf-date msg_time_send"><i class="fa fa-clock-o"></i>${data.date}</small>
+    </div>
+    </div>
+    `;
+    $('.noMessage').remove()
+    $('.chat-history').append(html)
+
+  }
+
+})
+
+// load old chat
+
+socket.on('loadChats', function(data) {
+  $('.chat-history').html('')
+  var chats = data.chats  
+  let html = ''
+    for(let x=0; x < chats.length; x++){
+      let addClass = ''
+      let date = ''
+      if(chats[x].sender_id === sender_id){
+        addClass = "message-feed media my-message"
+        date = "mf-date msg_time"
+      }
+      else{
+        addClass = "message-feed right other-message"
+        date = "mf-date msg_time_send"
+      }
+  
+      html+= `
+      <div class="${addClass}" id="${chats[x].id}">
+      <div class="media-body">
+      <div class="mf-content">
+      ${chats[x].message}`
+      if(chats[x].sender_id == sender_id){
+      html+=`<i class="fa fa-trash" aria-hidden="true" data-id="${chats[x].id}" data-toggle="modal" data-target="#deleteChatModal"></i>
+      <i class="fa fa-edit" aria-hidden="true" data-id="${chats[x].id}" data-msg="${chats[x].message}" data-toggle="modal" data-target="#editChatModal"></i>`
+      }
+      html+= `</div>
+        <small class="${date}"><i class="fa fa-clock-o"></i>${chats[x].date}</small>
+      </div>   
+      </div>`
+    }
+    if(chats == ''){
+    html+= '<h5 class="noMessage">No Messages Here yet...!</h5>'
+  }
+
+  $('.chat-history').append(html)
+
+})
+
+// update user online status
+
+socket.on('getOnlineUser', (data) => {
+  $('#'+data.user_id+'-status').text('Online')
+  $('#'+data.user_id+'-status').removeClass('offline-status')
+  $('#'+data.user_id+'-status').addClass('online-status')
+
+})
+
+// update user offline status
+
+socket.on('getOfflineUser', (data) => {
+  $('#'+data.user_id+'-status').text('Offline')
+  $('#'+data.user_id+'-status').removeClass('online-status')
+  $('#'+data.user_id+'-status').addClass('offline-status')
+
+})
+
+
+// delete chat
+
+$(document).on('click', '.fa-trash', function() {
+  let msg = $(this).parent().text()
+  $('#delete-message').text(msg)
+
+  $('#delete-message-id').val($(this).attr('data-id'))
+})
+
+$('#delete-chat-form').submit(function(event) {
+  event.preventDefault()
+
+  var id = $('#delete-message-id').val()
+
+  $.ajax({
+    url: '/delete-chat',
+    type: 'POST',
+    data: { id: id },
+    success: function(res){
+      if(res.success == true){
+        $('#'+id).remove()
+        $('#deleteChatModal').modal('hide')
+        location.reload();
+
+        socket.emit('chatDeleted', id)
+      }
+      else{
+        alert(res.msg)
+      }
+    }
+  })
+})
+
+socket.on('chatMessageDeleted', function(id) {
+  $('#'+id).remove()
+})
+
+// update user chat
+
+$(document).on('click', '.fa-edit', function() {
+$('#edit-message-id').val( $(this).attr('data-id') )
+$('#update-message').val( $(this).attr('data-msg') )
+
+})
+
+$('#update-chat-form').submit(function(event) {
+  event.preventDefault()
+
+  var id = $('#edit-message-id').val()
+  var msg = $('#update-message').val()
+
+  $.ajax({
+    url: '/update-chat',
+    type: 'POST',
+    data: { id: id, message: msg },
+    success: function(res){
+      if(res.success == true){
+        $('#editChatModal').hide()
+        location.reload()
+        $('#'.id).find('.my-message').text(msg)
+        $('#'.id).find('.fa-edit').attr('data-msg', msg)
+        socket.emit('chatUpdated', { id: id, message: msg })
+      }
+      else{
+        alert(res.msg)
+      }
+    }
+  })
+})
+
+socket.on('chatMessageUpdated', function(data) {
+  $('#'+data.id).find('.my-message').text(data.message)
+})
+
+
+// contact save of user
+
+
+$(document).on('click', '#createContacts', function() {
+$('#createContact').val( $(this).attr('data-id') )
+
+})
+
+$('#create-contact-form').submit(function(event) {
+  event.preventDefault()
+
+  var name = $('#nameContact').val()
+  var phone = $('#phoneContact').val()
+
+
+  $.ajax({
+    url: '/save-contact',
+    type: 'POST',
+    data: { name: name, phone: phone, user_id: sender_id },
+    success: function(res){
+      if(res.success == true){
+        $("#createContactModal").hide(); 
+        alert(res.msg)
+
+        location.reload();
+      }
+      else{
+        alert(res.msg)
+      }
+    }
+  })
+})
+
+
+// update contact
+
+$(document).on('click', '.fa-edit', function() {
+$('#edit-contact-id').val( $(this).attr('data-id') )
+$('#nameCont').val( $(this).attr('data-name') )
+
+})
+
+$('#update-contact-form').submit(function(event) {
+event.preventDefault()
+
+var id = $('#edit-contact-id').val()
+var name = $('#nameCont').val()
+
+
+$.ajax({
+  url: '/update-contact',
+  type: 'POST',
+  data: { id: id, name: name, user_id: sender_id },
+  success: function(res){
+    if(res.success === true){
+      $('#editContactModal').hide()
+      $('#'.id).find('.nameContact').text(name)
+      $('#'.id).find('#editContact').attr('data-name', name)
+      socket.emit('contactUpdated', { id: id, name: name })
+      location.reload();
+
+    }
+    else{
+      alert(res.msg)
+    }
+  }
+})
+})
+
+socket.on('contactInfoUpdated', function(data) {
+$('#'+data.id).find('.nameContact').text(data.name)
+})
+
+
+
+// delete contact
+
+$(document).on('click', '.fa-trash', function() {
+  let name = $(this).attr('data-name')
+  $('#delete-contact').text(name)
+
+  $('#delete-contact-id').val($(this).attr('data-id'))
+
+})
+
+$('#delete-contact-form').submit(function(event) {
+event.preventDefault()
+
+var id = $('#delete-contact-id').val()
+
+$.ajax({
+  url: '/delete-contact',
+  type: 'POST',
+  data: { id: id, user_id: sender_id },
+  success: function(res){
+    if(res.success === true){
+      $('#'+id).remove()
+        $("#deleteContactModal").hide();
+        socket.emit('contactDeleted', id)
+        location.reload();
+
+    }
+    else{
+      alert(res.msg)
+    }
+  }
+})
+})
+
+socket.on('contactInfoDeleted', function(id) {
+  $('#'+id).remove()
+})
+
+
+  // update information user
+
+$(document).on('click', '#editUser', function() {
+$('#edit-user-id').val( $(this).attr('data-id') )
+$('#nameUser').val( $(this).attr('data-name') )
+
+})
+
+$('#update-user-form').submit(function(event) {
+event.preventDefault()
+
+var id = $('#edit-user-id').val()
+var name = $('#nameUser').val()
+
+
+$.ajax({
+  url: '/update-user',
+  type: 'POST',
+  data: { id: id, name: name },
+  success: function(res){
+    if(res.success === true){
+      $('#editUserModal').modal('hide')
+      $('#'.id).find('.userName').text(name)
+      $('#'.id).find('#editUser').attr('data-name', name)
+      socket.emit('userUpdated', { id: id, name: name })
+      location.reload();
+
+    }
+    else{
+      alert(res.msg)
+    }
+  }
+})
+})
+
+socket.on('userInfoUpdated', function(data) {
+$('#'+data.id).find('.userName').text(data.name)
+})
+
+$(document).on('click', '#closeChat', function() {
+location.reload()
+})
+
+
+$(document).on('click', '#infoUser', function () {
+  $('#view-user-id').val( $(this).attr('data-id') )
+
+})
+
+$(document).on('click', '#infoContact', function () {
+  let id = $(this).attr('data-id')
+  let img = $(this).attr('data-img')
+  let name = $(this).attr('data-name')
+  let phone = $(this).attr('data-phone')
+  let isOnline = $(this).attr('data-is_online')
+
+  let html = `
+  <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">
+        <div id="infoImg" class="">
+          <img src="${img}" alt="user" class="img-avatar">
+        </div>
+        <div id="infoIsOnline" class="media-body">`
+          if(isOnline !== 0){
+          html += `<small class="list-group-item-heading">Online</small>`
+          }else {
+          html += `<small class="list-group-item-heading">Offline</small>`
+          } 
+          html += `
+        </div>
+        </h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="id" id="view-user-id">
+      
+        <div id="infoName" class="media-body">
+          <p style="font-weight: 900;">Name: </p> 
+          <small class="list-group-item-heading">${name}</small>
+        </div>
+        <br>
+        <div id="infoPhone" class="media-body">
+          <p style="font-weight: 900;">Phone Number: </p>
+          <small class="list-group-item-heading">${phone}</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" id="closeContact" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+      `
+
+      $('.infoConatct').append(html)
+})
+
+socket.on('showNotification', (data) => {
+  setTimeout(() => {
+    $('.circleNotif').load(' .circleNotif')
+    if(data.count !== 0 && sender_id === data.sender_id) {
+      $('.circleNotif').text(data.count)
+    } else {
+      $('.circleNotif').load(' .circleNotif')
+      $('.circleNotif').hide()
+    }}, 1000);
+})
+
+</script>
+
+
+<%- include('layouts/footer.ejs') %>

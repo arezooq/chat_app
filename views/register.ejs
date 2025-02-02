@@ -1,0 +1,132 @@
+<%- include('layouts/header.ejs') %> <% if(typeof message !== 'undefined'){ %>
+<p style="color: green"><%= message %></p>
+<% } %>
+
+<h1 class="d-grid gap-2 col-6 mx-auto align-items-center mt-5">Sign Up</h1>
+
+<form
+  action=""
+  method="post"
+  enctype="multipart/form-data"
+  class="d-grid gap-2 col-6 mx-auto align-items-center mt-5"
+>
+  <div class="mb-3 mt-3">
+    <input
+      type="text"
+      name="phone"
+      class="form-control"
+      id="phone"
+      placeholder="Enter Phone Number"
+      aria-labelledby="phoneHelpBlock"
+      required
+    />
+    <div id="phoneHelpBlock" class="form-text"></div>
+  </div>
+  <div class="mb-3 mt-3">
+    <input
+      type="text"
+      name="name"
+      class="form-control"
+      id="name"
+      placeholder="Enter Name"
+      required
+    />
+  </div>
+  <div class="mb-3 mt-3">
+    <input
+      type="password"
+      name="password"
+      class="form-control"
+      id="password"
+      placeholder="Enter Password"
+      aria-labelledby="passwordHelpBlock"
+      required
+    />
+    <div id="passwordHelpBlock" class="form-text"></div>
+  </div>
+  <div class="mb-3 mt-3">
+    <input
+      type="password"
+      name="confirmPassword"
+      class="form-control"
+      id="confirmPassword"
+      placeholder="Enter Confirm Password"
+      required
+    />
+  </div>
+  <div class="mb-3 mt-3">
+    <input type="file" name="image" class="form-control" id="image" />
+  </div>
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3 mx-auto">
+    <button type="submit" class="btn btn-primary" id="register">Signup</button>
+  </div>
+</form>
+
+<script>
+  const button = document.getElementById("register");
+  const phone = document.getElementById("phone");
+  const phoneHelpBlock = document.getElementById("phoneHelpBlock");
+  const password = document.getElementById("password");
+  const passwordHelpBlock = document.getElementById("passwordHelpBlock");
+
+  let phoneCheck = false;
+  let passCheck = false;
+  const disableButton = () => {
+    button.disabled = true;
+  };
+  const enableButton = () => {
+    button.disabled = false;
+  };
+
+  phone.addEventListener("blur", (e) => {
+    const value = e.currentTarget.value;
+
+    const regex = /^09\d{9}$/;
+
+    if (value === "") {
+      phoneCheck = false;
+      disableButton();
+      phoneHelpBlock.innerText = "Please Enter Your Phone Number";
+      phoneHelpBlock.style.color = "red";
+    } else if ((value.length = 11 && value.match(regex))) {
+      phoneCheck = true;
+      if (phoneCheck == true && passCheck == true) {
+        enableButton();
+      }
+      phoneHelpBlock.innerText = "Great!, You Enter A Valid Phone Number";
+      phoneHelpBlock.style.color = "green";
+    } else {
+      phoneCheck = false;
+      disableButton();
+      phoneHelpBlock.innerText = "Your Phone Number is_invalid";
+      phoneHelpBlock.style.color = "red";
+    }
+  });
+
+  password.addEventListener("blur", (e) => {
+    const value = e.currentTarget.value;
+
+    if (value === "") {
+      passCheck = false;
+      disableButton();
+      passwordHelpBlock.innerText = "Please Enter Your Password";
+      passwordHelpBlock.style.color = "red";
+    }
+    if (value.length < 8) {
+      passCheck = false;
+      disableButton();
+      passwordHelpBlock.innerText = "Your Password must be 8 character longs";
+      passwordHelpBlock.style.color = "red";
+    }
+    if (value.length >= 8) {
+      passCheck = true;
+      if (phoneCheck == true && passCheck == true) {
+        enableButton();
+      }
+      passwordHelpBlock.innerText = "Great!, You Enter A Valid Password";
+      passwordHelpBlock.style.color = "green";
+    }
+  });
+</script>
+
+<%- include('layouts/footer.ejs') %>
