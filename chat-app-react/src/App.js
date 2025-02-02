@@ -1,16 +1,19 @@
-import React, { Component } from "react";
-import Signin from "./components/Login"
-import Signup from "./components/Register"
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Signin from "./pages/Login";
+import Signup from "./pages/Register";
+import Dashboard from "./pages/Dashbord"; // نام را تصحیح کردم
 
-class App extends Component {
-  render() {
-    return (
-      <div className="container">
-        <Signin />
-        <Signup />
-      </div>
-    )
-  }
+function App() {
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<Signin />} />
+        <Route path="/register" element={<Signup />} />
+        <Route path="/dashboard" element={<Dashboard />} />
+      </Routes>
+    </Router>
+  );
 }
 
 export default App;
