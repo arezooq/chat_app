@@ -59,5 +59,5 @@ To clone the repository using an SSH key, including a certificate issued by your
 
 ### Author
 
-* Arezoo Ghorbanzade(https://github.com/arezooq)
-* Farnaz Madadi(https://github.com/farnazmmd)
+* [Arezoo Ghorbanzade](https://github.com/arezooq)
+* [Farnaz Madadi](https://github.com/farnazmmd)
